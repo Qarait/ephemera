@@ -9,7 +9,7 @@
 
 **Ephemera** is a sovereign, air-gapped SSH Certificate Authority that enforces **Zero Trust** principles for your infrastructure. It eliminates static SSH keys, enforces MFA for every session, and provides tamper-proof audit trails.
 
-![Architecture Diagram](ephemera/assets/diagrams/ephemera_v2_architecture.png)
+![Architecture Diagram](assets/diagrams/ephemera_v2_architecture.png)
 
 ## 🌟 Killer Features
 
@@ -28,9 +28,30 @@ All actions are logged to a **Merkle-chained** ledger. Logs are immutable and ca
 ### ⚡ Just-in-Time Sudo
 Privilege escalation (`sudo`) is no longer static. It requires a fresh MFA approval and is logged centrally.
 
+![Sudo Hang](assets/screenshots/sudo_hang.png)
+
 ## Quick Start
 
-### 1. Client Setup (The Magic)
+### 1. Server Setup (Docker)
+
+**Prerequisites:** Docker and Docker Compose.
+
+1.  **Start the service:**
+    ```bash
+    docker compose up --build -d
+    ```
+
+2.  **Access the Dashboard:**
+    Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+3.  **Login:**
+    -   **Username:** `admin`
+    -   **Password:** (Check the Docker logs for the initial one-time password)
+        ```bash
+        docker compose logs ephemera | grep "Password:"
+        ```
+
+### 2. Client Setup (The Magic)
 
 ```bash
 # Install the CLI
@@ -51,25 +72,6 @@ ephemera status
 # Connect securely!
 ssh user@your-server
 ```
-
-### 2. Server Setup (Docker)
-
-**Prerequisites:** Docker and Docker Compose.
-
-1.  **Start the service:**
-    ```bash
-    docker compose up --build -d
-    ```
-
-2.  **Access the Dashboard:**
-    Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-3.  **Login:**
-    -   **Username:** `admin`
-    -   **Password:** (Check the Docker logs for the initial one-time password)
-        ```bash
-        docker compose logs ephemera | grep "Password:"
-        ```
 
 ## Disaster Recovery (Encrypted Backup)
 
