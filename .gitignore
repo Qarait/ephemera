@@ -1,47 +1,36 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-venv/
+# --- SECRETS (NEVER PUSH) ---
 .env
-
-# Ephemera Keys and Secrets
-ca.key
-ca.crt
-*.enc
-*.pem
+creds.txt
+secrets.txt
 *.key
-*.pub
-admin_credentials.txt
-secret_key
-session_cookie
+*.pem
+id_rsa
+id_ed25519
 
-# Database
-ephemera.db
+# --- DATA & STATE ---
+ca_store/
+server/ca_store/
+database/
+server/data/
+*.db
 *.sqlite
-server/data/users.json
+audit.json
+audit_chain.json
 
-# Backups and Shards
+# --- BACKUPS (ADDED FOR SAFETY) ---
 backup/
 shards/
-shards_test/
-shard_*.json
-backup_shard_*.json
+*.enc
+*.json
 
-# Logs
-*.log
-audit.db
+# --- BUILD ARTIFACTS ---
+__pycache__/
+*.pyc
+dist/
+build/
+*.spec
+*.egg-info/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
+# --- IDE SETTINGS ---
 .idea/
-
-test.py
-
-creds.txt
-*_output.txt
-demo_video/
+.vscode/
