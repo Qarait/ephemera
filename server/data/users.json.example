@@ -1,0 +1,10 @@
+[
+  {
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$2LtrFJFqR3XQrFfI$ee3d52f85ba055a81b679db14e29fd4aedf5225af4d31e7435eced3f694ae419723483b1a2aa8766a7b73cf476515b88c44fcb6ab1321cfc1d3606238be82de4",
+    "role": "admin",
+    "totp_secret": "7IFS52L4GCNMH37AMIZR3ZWFRDJYVB5H",
+    "is_email_verified": true,
+    "mfa_enabled": true
+  }
+]

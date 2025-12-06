@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup MFA - Ephemera</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="login-container" style="max-width: 500px;">
+        <div class="login-header">
+            <h2>Setup Two-Factor Authentication</h2>
+            <p>Secure your account to continue.</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('totp')">Authenticator App</button>
+            <button class="tab-btn" onclick="showTab('webauthn')">Security Key / Passkey</button>
+        </div>
+
+        <!-- TOTP Section -->
+        <div id="totp-section" class="tab-content active">
+            <div class="form-group" style="text-align: center;">
+                <p>1. Scan this QR code with Google Authenticator or Authy.</p>
+                <div id="qr-container" style="margin: 20px 0;">
+                    <div class="spinner"></div>
+                </div>
+                <p id="secret-text" class="mono-text"></p>
+            </div>
+
+            <div class="form-group">
+                <p>2. Enter the 6-digit code from your app.</p>
+                <input type="text" id="totp-code" placeholder="000000" maxlength="6"
+                    style="text-align: center; letter-spacing: 5px; font-size: 1.2rem;">
+            </div>
+
+            <button onclick="verifyTotp()" class="btn-primary">Verify & Enable</button>
+        </div>
+
+        <!-- WebAuthn Section -->
+        <div id="webauthn-section" class="tab-content">
+            <div class="form-group" style="text-align: center;">
+                <p>Use a hardware security key (YubiKey) or platform authenticator (Touch ID, Windows Hello).</p>
+                <div style="font-size: 3rem; margin: 20px;">🔑</div>
+            </div>
+            <button onclick="registerWebAuthn()" class="btn-primary">Register Security Key</button>
+        </div>
+
+        <div id="status-message" class="alert" style="display:none; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // Tab Logic
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            if (tabName === 'totp') {
+                document.getElementById('totp-section').classList.add('active');
+                document.querySelector('button[onclick="showTab(\'totp\')"]').classList.add('active');
+                initTotp();
+            } else {
+                document.getElementById('webauthn-section').classList.add('active');
+                document.querySelector('button[onclick="showTab(\'webauthn\')"]').classList.add('active');
+            }
+        }
+
+        // TOTP Logic
+        async function initTotp() {
+            const qrContainer = document.getElementById('qr-container');
+            if (qrContainer.querySelector('img')) return; // Already loaded
+
+            try {
+                const res = await fetch('/api/setup-mfa/totp/generate', { method: 'POST' });
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error);
+
+                qrContainer.innerHTML = `<img src="${data.qrImage}" alt="QR Code" style="width: 200px; height: 200px;">`;
+                document.getElementById('secret-text').textContent = `Secret: ${data.secret}`;
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        async function verifyTotp() {
+            const code = document.getElementById('totp-code').value;
+            if (!code) return showError("Please enter the code.");
+
+            try {
+                const res = await fetch('/api/setup-mfa/totp/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showSuccess("MFA Enabled! Redirecting...");
+                    setTimeout(() => window.location.href = '/index.html', 1500);
+                } else {
+                    showError(data.error);
+                }
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        // WebAuthn Logic (Reusing existing endpoints)
+        async function registerWebAuthn() {
+            const { startRegistration } = SimpleWebAuthnBrowser;
+
+            try {
+                // 1. Get Options
+                const resp = await fetch('/api/webauthn/register/options', { method: 'POST' });
+                const opts = await resp.json();
+                if (opts.error) throw new Error(opts.error);
+
+                // 2. Create Credential
+                const attResp = await startRegistration(opts);
+
+                // 3. Verify
+                const verifyResp = await fetch('/api/webauthn/register/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(attResp),
+                });
+                const verifyData = await verifyResp.json();
+
+                if (verifyData.verified) {
+                    showSuccess("Security Key Registered! Redirecting...");
+                    setTimeout(() => window.location.href = '/index.html', 1500);
+                } else {
+                    throw new Error(verifyData.error || 'Verification failed');
+                }
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('status-message');
+            el.textContent = msg;
+            el.className = "alert alert-error";
+            el.style.display = "block";
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('status-message');
+            el.textContent = msg;
+            el.className = "alert alert-success";
+            el.style.display = "block";
+        }
+
+        // Init
+        initTotp();
+    </script>
+
+    <style>
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .mono-text {
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</body>
+
+</html>

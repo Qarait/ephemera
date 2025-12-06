@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Ephemera Keys and Secrets
+ca.key
+ca.crt
+*.enc
+*.pem
+*.key
+*.pub
+admin_credentials.txt
+secret_key
+session_cookie
+
+# Database
+ephemera.db
+*.sqlite
+server/data/users.json
+
+# Backups and Shards
+backup/
+shards/
+shards_test/
+shard_*.json
+backup_shard_*.json
+
+# Logs
+*.log
+audit.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+test.py
+
+creds.txt
+*_output.txt
+demo_video/

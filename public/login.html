@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ephemera - Zero-Trust SSH Access</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="theme.js"></script>
+</head>
+
+<body class="login-page">
+    <button id="themeToggle" class="theme-toggle" style="position: absolute; top: 1rem; right: 1rem;">🌙</button>
+
+    <div class="login-container">
+        <h1 style="margin-bottom: 0.25rem;">Ephemera</h1>
+        <p class="subtitle" style="text-align: center; color: #64748b; margin-top: 0; margin-bottom: 1.5rem;">Zero-Trust
+            Ephemeral SSH Access</p>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="otp">TOTP Code</label>
+                <input type="text" id="otp" name="otp" placeholder="123456" autocomplete="off">
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%">Login</button>
+            <div id="errorMsg" class="error"></div>
+
+            <div style="margin-top: 1rem; text-align: center;">
+                <span style="color: #64748b; font-size: 0.9rem;">Don't have an account? </span>
+                <a href="/signup.html"
+                    style="color: #2563eb; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Sign Up</a>
+            </div>
+
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="/auth/login" class="btn-secondary"
+                    style="display: inline-block; width: 100%; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; box-sizing: border-box;">Login
+                    with SSO</a>
+            </div>
+            <div style="margin-top: 0.5rem; text-align: center;">
+                <button type="button" id="webauthnLoginBtn" class="btn-secondary" style="width: 100%;">Login with
+                    Security Key</button>
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                <a href="/about.html" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">What is
+                    Ephemera?</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // WebAuthn Helpers
+        function bufferToBase64URL(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let string = '';
+            for (let i = 0; i < bytes.byteLength; i++) { string += String.fromCharCode(bytes[i]); }
+            return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function base64URLToBuffer(base64URL) {
+            const base64 = base64URL.replace(/-/g, '+').replace(/_/g, '/');
+            const padLen = (4 - (base64.length % 4)) % 4;
+            const padded = base64.padEnd(base64.length + padLen, '=');
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
+            return bytes.buffer;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const otpCode = document.getElementById('otp').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, otpCode })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (data.status === 'mfa_required') {
+                        errorMsg.textContent = 'MFA Code Required';
+                        errorMsg.style.color = 'orange';
+                        document.getElementById('otp').focus();
+                    } else if (data.status === 'mfa_setup_required') {
+                        window.location.href = '/setup-mfa.html';
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    errorMsg.textContent = data.error || 'Login failed';
+                    errorMsg.style.color = 'red';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Network error';
+                errorMsg.style.color = 'red';
+            }
+        });
+
+        document.getElementById('webauthnLoginBtn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            if (!username) {
+                alert('Please enter your username first.');
+                return;
+            }
+
+            try {
+                // 1. Get Options
+                const res = await fetch('/api/webauthn/login/options', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed to get login options');
+                }
+                const options = await res.json();
+
+                // 2. Decode challenge & allowCredentials
+                options.challenge = base64URLToBuffer(options.challenge);
+                if (options.allowCredentials) {
+                    options.allowCredentials.forEach(c => {
+                        c.id = base64URLToBuffer(c.id);
+                    });
+                }
+
+                // 3. Get Assertion
+                const credential = await navigator.credentials.get({ publicKey: options });
+
+                // 4. Encode response
+                const credentialJSON = {
+                    id: credential.id,
+                    rawId: bufferToBase64URL(credential.rawId),
+                    response: {
+                        authenticatorData: bufferToBase64URL(credential.response.authenticatorData),
+                        clientDataJSON: bufferToBase64URL(credential.response.clientDataJSON),
+                        signature: bufferToBase64URL(credential.response.signature),
+                        userHandle: credential.response.userHandle ? bufferToBase64URL(credential.response.userHandle) : null,
+                    },
+                    type: credential.type,
+                };
+
+                // 5. Verify
+                const verifyRes = await fetch('/api/webauthn/login/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentialJSON)
+                });
+
+                if (verifyRes.ok) {
+                    window.location.href = '/';
+                } else {
+                    const err = await verifyRes.json();
+                    alert(`Login Failed: ${err.error}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert(`Error: ${e.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>

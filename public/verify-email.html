@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - Ephemera</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Email Verification</h2>
+            <p>Verifying your account...</p>
+        </div>
+
+        <div id="message" class="alert" style="display:none;"></div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="login.html" class="btn-secondary">Go to Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const messageDiv = document.getElementById('message');
+
+            if (!token) {
+                messageDiv.textContent = "Error: No verification token provided.";
+                messageDiv.className = "alert alert-error";
+                messageDiv.style.display = "block";
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = "Success! Your email has been verified. You can now log in.";
+                    messageDiv.className = "alert alert-success";
+                } else {
+                    messageDiv.textContent = data.error || "Verification failed.";
+                    messageDiv.className = "alert alert-error";
+                }
+            } catch (e) {
+                messageDiv.textContent = "Network error occurred.";
+                messageDiv.className = "alert alert-error";
+            }
+            messageDiv.style.display = "block";
+        });
+    </script>
+</body>
+
+</html>

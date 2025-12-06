@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Ephemera</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+</head>
+
+<body class="login-page">
+    <button id="themeToggle" class="theme-toggle" style="position: absolute; top: 1rem; right: 1rem;">🌙</button>
+
+    <div class="login-container">
+        <h1 style="margin-bottom: 0.25rem;">Ephemera</h1>
+        <p class="subtitle" style="text-align: center; color: #64748b; margin-top: 0; margin-bottom: 1.5rem;">Create
+            your account</p>
+
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%">Sign Up</button>
+            <div id="errorMsg" class="error"></div>
+
+            <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Already have an account? </span>
+                <a href="/login.html"
+                    style="color: #2563eb; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Sign In</a>
+            </div>
+        </form>
+
+        <!-- Success / MFA Setup View -->
+        <div id="successView" class="hidden" style="text-align: center;">
+            <div style="color: #22c55e; font-size: 3rem; margin-bottom: 1rem;">✓</div>
+            <h2 style="margin-bottom: 0.5rem;">Account Created!</h2>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">Scan this QR code with your authenticator app (Google
+                Auth, Authy, etc).</p>
+
+            <img id="qrImage" src="" alt="MFA QR Code" <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Sign Up - Ephemera</title>
+                <link rel="stylesheet" href="style.css">
+                <script src="theme.js"></script>
+            </head>
+
+            <body class="login-page">
+                <button id="themeToggle" class="theme-toggle"
+                    style="position: absolute; top: 1rem; right: 1rem;">🌙</button>
+
+                <div class="login-container">
+                    <h1 style="margin-bottom: 0.25rem;">Ephemera</h1>
+                    <p class="subtitle"
+                        style="text-align: center; color: #64748b; margin-top: 0; margin-bottom: 1.5rem;">Create
+                        your account</p>
+
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="width: 100%">Sign Up</button>
+                        <div id="error-message" class="error" style="display:none;"></div>
+
+                        <div
+                            style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                            <span style="color: #64748b; font-size: 0.9rem;">Already have an account? </span>
+                            <a href="/login.html"
+                                style="color: #2563eb; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Sign
+                                In</a>
+                        </div>
+                    </form>
+
+                    <!-- Success / MFA Setup View -->
+                    <div id="success-message" class="alert alert-success" style="display:none;">
+                        <p><strong>Registration Successful!</strong></p>
+                        <p>Please check your email to verify your account.</p>
+                        <p><a href="#" id="mock-verify-link">Click here to verify (Mock)</a></p>
+                        <div style="margin-top: 15px;">
+                            <a href="login.html" class="btn-secondary">Go to Login</a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+
+                        const username = document.getElementById('username').value;
+                        const password = document.getElementById('password').value;
+                        const confirmPassword = document.getElementById('confirmPassword').value;
+                        const errorDiv = document.getElementById('error-message');
+                        const successDiv = document.getElementById('success-message');
+                        const form = document.getElementById('signupForm');
+
+                        errorDiv.style.display = 'none';
+                        successDiv.style.display = 'none';
+
+                        if (password !== confirmPassword) {
+                            errorDiv.textContent = "Passwords do not match";
+                            errorDiv.style.display = 'block';
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch('/api/signup', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username, password })
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                form.style.display = 'none';
+                                successDiv.style.display = 'block';
+
+                                if (data.verificationLink) {
+                                    document.getElementById('mock-verify-link').href = data.verificationLink;
+                                }
+                            } else {
+                                errorDiv.textContent = data.error || "Signup failed";
+                                errorDiv.style.display = 'block';
+                            }
+                        } catch (err) {
+                            errorDiv.textContent = "Network error occurred";
+                            errorDiv.style.display = 'block';
+                        }
+                    });
+                </script>
+            </body>
+
+            </html>

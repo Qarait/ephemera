@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Ephemera</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-row">
+                <h1>Ephemera</h1>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="icon">🌓</span>
+                </button>
+            </div>
+            <nav>
+                <a href="/" class="link">Home</a> |
+                <a href="/about.html" class="link">About</a> |
+                <a href="/technical.html" class="link">Technical</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>The Problem</h2>
+                <blockquote>
+                    <p style="font-size: 1.2rem; font-style: italic; color: var(--text-muted);">“What if SSH keys worked
+                        like virtual credit cards?”</p>
+                </blockquote>
+                <p>In most organizations, SSH access depends on <strong>static, long-lived private keys</strong>. These
+                    keys sit on laptops for years, unrotated and dangerous.</p>
+                <ul>
+                    <li>If they leak, attackers inherit access indefinitely.</li>
+                    <li>If an employee leaves, keys must be manually revoked.</li>
+                    <li>If a machine is compromised, you rarely know what was accessed.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>The Ephemera Solution</h2>
+                <p>Ephemera replaces static keys with <strong>on-demand, short-lived certificates</strong>.</p>
+
+                <div style="margin-top: 1.5rem;">
+                    <h3>1. Just-in-Time Access</h3>
+                    <p class="desc">Certificates are valid for only minutes (5, 15, or 60). When the timer expires,
+                        access is automatically revoked.</p>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <h3>2. Zero-Trust Identity</h3>
+                    <p class="desc">No long-lived private keys on disk. Identity is validated via SSO/MFA before every
+                        single session.</p>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <h3>3. Tamper-Evident Audit</h3>
+                    <p class="desc">Every issuance is recorded in an immutable, hash-linked ledger. History cannot be
+                        rewritten.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Why It Matters</h2>
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <h3>For Security</h3>
+                        <ul>
+                            <li>No static keys to steal</li>
+                            <li>No rotation headaches</li>
+                            <li>Complete visibility</li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <h3>For Developers</h3>
+                        <ul>
+                            <li>No key management toil</li>
+                            <li>Seamless SSO login</li>
+                            <li>Works with standard SSH tools</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>The Vision</h2>
+                <p>Ephemera is a prototype of the future of infrastructure access:</p>
+                <ul>
+                    <li><strong>Certificates</strong> instead of keys</li>
+                    <li><strong>Seconds</strong> instead of years</li>
+                    <li><strong>Proof</strong> instead of trust</li>
+                </ul>
+                <p style="margin-top: 1rem; color: var(--text-muted);">A self-contained, Docker-based infrastructure
+                    component that runs anywhere.</p>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

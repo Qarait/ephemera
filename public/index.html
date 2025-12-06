@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<nav>
+    <a href="#dashboard" class="link">Dashboard</a> |
+    <a href="#about" class="link">About</a> |
+    <a href="#technical" class="link">Technical</a>
+</nav>
+</header>
+
+<main>
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="card">
+        <h2>Certificate Dashboard</h2>
+        <p class="desc">Paste your SSH public key (e.g. from <code>~/.ssh/id_rsa.pub</code>) to receive a
+            short-lived certificate.</p>
+
+        <div class="form-group">
+            <label for="publicKey">Public Key</label>
+            <textarea id="publicKey" rows="4" placeholder="ssh-rsa AAAA..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="validity">Validity Period</label>
+            <select id="validity">
+                <option value="5">5 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="60">60 Minutes</option>
+            </select>
+        </div>
+
+        <button id="generateBtn" class="btn-primary">Generate Certificate</button>
+        <div id="result" class="hidden">
+            <h3>Your Certificate</h3>
+            <textarea id="certOutput" rows="6" readonly></textarea>
+            <th>User</th>
+            <th>Issued At</th>
+            <th>Expires At</th>
+            <th>Validity</th>
+            <th>ID</th>
+            </tr>
+            </thead>
+            <tbody>
+                <!-- Rows loaded via JS -->
+            </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>CA Configuration</h2>
+        <p>To trust these certificates, add this CA public key to your server's
+            <code>/etc/ssh/sshd_config</code> via <code>TrustedUserCAKeys</code>.
+        </p>
+        <a href="/api/ca" target="_blank" class="link">View CA Public Key</a>
+    </section>
+
+    <section class="card">
+        <h2>Security Key</h2>
+        <p>Register a WebAuthn security key (e.g. YubiKey, TouchID) for passwordless login.</p>
+        <button id="registerWebAuthnBtn" class="btn-secondary">Register Security Key</button>
+        <div id="webAuthnStatus" class="status"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="card">
+            <h2>The Problem</h2>
+            <blockquote>
+                <p style="font-size: 1.2rem; font-style: italic; color: var(--text-muted);">“What if SSH keys
+                    worked like virtual credit cards?”</p>
+            </blockquote>
+            <p>In most organizations, SSH access depends on <strong>static, long-lived private keys</strong>.
+                These keys sit on laptops for years, unrotated and dangerous.</p>
+            <ul>
+                <li>If they leak, attackers inherit access indefinitely.</li>
+                <li>If an employee leaves, keys must be manually revoked.</li>
+                <li>If a machine is compromised, you rarely know what was accessed.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>The Ephemera Solution</h2>
+            <p>Ephemera replaces static keys with <strong>on-demand, short-lived certificates</strong>.</p>
+
+            <div style="margin-top: 1.5rem;">
+                <h3>1. Just-in-Time Access</h3>
+                <p class="desc">Certificates are valid for only minutes (5, 15, or 60). When the timer expires,
+                    access is automatically revoked.</p>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3>2. Zero-Trust Identity</h3>
+                <p class="desc">No long-lived private keys on disk. Identity is validated via SSO/MFA before
+                    every single session.</p>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3>3. Tamper-Evident Audit</h3>
+                <p class="desc">Every issuance is recorded in an immutable, hash-linked ledger. History cannot
+                    be rewritten.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Why It Matters</h2>
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <h3>For Security</h3>
+                    <ul>
+                        <li>No static keys to steal</li>
+                        <li>No rotation headaches</li>
+                        <li>Complete visibility</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <h3>For Developers</h3>
+                    <ul>
+                        <li>No key management toil</li>
+                        <li>Seamless SSO login</li>
+                        <li>Works with standard SSH tools</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>The Vision</h2>
+            <p>Ephemera is a prototype of the future of infrastructure access:</p>
+            <ul>
+                <li><strong>Certificates</strong> instead of keys</li>
+                <li><strong>Seconds</strong> instead of years</li>
+                <li><strong>Proof</strong> instead of trust</li>
+            </ul>
+            <p style="margin-top: 1rem; color: var(--text-muted);">A self-contained, Docker-based infrastructure
+                component that runs anywhere.</p>
+        </div>
+    </section>
+
+    <!-- Technical Section -->
+    <section id="technical">
+        <div class="card">
+            <h1>Technical Architecture</h1>
+
+            <h2>1. System Overview</h2>
+            <p>Ephemera is a Zero-Trust SSH Certificate Authority engineered to eliminate static credentials and
+                replace
+                them with short-lived, identity-bound certificates. It enables “Just-In-Time Access” by
+                requiring
+                real-time authentication before any certificate is issued.</p>
+
+            <h3>Core Components</h3>
+            <ul>
+                <li>Python 3 (Flask) service</li>
+                <li>OpenSSH-based certificate signing (ed25519)</li>
+                <li>WebAuthn (FIDO2) authentication</li>
+                <li>Docker-based deployment</li>
+                <li>Tamper-evident local ledger for audit integrity</li>
+            </ul>
+            <p>Ephemera is designed as a fully self-contained security appliance that can run on any workstation
+                or
+                server without external dependencies.</p>
+
+            <h2>2. Security Architecture</h2>
+            <p>Ephemera follows a defense-in-depth identity model centered around strict credential lifecycle
+                management.</p>
+
+            <h3>2.1 Zero-Trust Access Model</h3>
+            <p>Ephemera enforces:</p>
+            <ul>
+                <li><strong>Ephemeral Credentials</strong><br>All SSH certificates expire automatically after a
+                    short
+                    TTL (5–60 minutes).</li>
+                <li><strong>No long-lived private keys</strong><br>Developers do not store persistent SSH keys
+                    on disk
+                    for server access.</li>
+                <li><strong>Identity Binding</strong><br>Certificates include explicit principals based on the
+                    authenticated user’s assigned role.</li>
+            </ul>
+
+            <h3>2.2 Certificate Authority (CA) Design</h3>
+            <p>Ephemera contains a dedicated signing subsystem responsible for certificate issuance.</p>
+            <ul>
+                <li>The CA private key is stored in a locked-down directory with strict ownership and minimal
+                    read
+                    privileges.</li>
+                <li>The application never reads the private key into memory; signing is performed exclusively
+                    through
+                    controlled OpenSSH subprocess calls.</li>
+                <li>Identity verification (MFA, WebAuthn, SSO) is mandatory before certificate issuance.</li>
+            </ul>
+            <p>This ensures the CA is isolated, predictable, and resistant to misuse.</p>
+
+            <h2>3. Cryptographic Audit Logging</h2>
+            <p>Audit integrity is a first-class component of Ephemera.</p>
+
+            <h3>3.1 Tamper-Evident Ledger</h3>
+            <p>Ephemera maintains a Merkle-linked audit ledger stored locally.</p>
+            <ul>
+                <li>Each log entry contains a timestamp, event type, and hash linking it to the previous entry.
+                </li>
+                <li>Any modification to historical entries immediately breaks the cryptographic chain.</li>
+                <li>The ledger is fully local and does not require cloud storage or external services.</li>
+            </ul>
+            <p>This ensures that all access events remain transparently verifiable.</p>
+
+            <h3>3.2 Filesystem Reinforcement</h3>
+            <p>The audit ledger is stored on an append-only file within the container.</p>
+            <ul>
+                <li>Overwrite attempts are blocked at the kernel level.</li>
+                <li>Append operations remain allowed for real-time logging.</li>
+                <li>A parallel Syslog stream mirrors every event to an isolated logging service for redundancy.
+                </li>
+            </ul>
+            <p>This dual-path design guarantees reliable, high-integrity audit capture.</p>
+
+            <h2>4. Authentication & Authorization</h2>
+            <p>Ephemera supports modern authentication standards with layered protection.</p>
+
+            <h3>4.1 Multi-Factor Authentication</h3>
+            <ul>
+                <li>Password authentication using PBKDF2-SHA256 hashing</li>
+                <li>TOTP-based MFA</li>
+                <li>WebAuthn (FIDO2) support for YubiKey, biometrics, and platform authenticators</li>
+                <li>Optional SSO/OAuth sign-in via external identity providers</li>
+            </ul>
+
+            <h3>4.2 Role-Based Principal Assignment</h3>
+            <p>Each user role maps to specific SSH principals:</p>
+            <ul>
+                <li><strong>admin</strong> → root, admin, user</li>
+                <li><strong>developer</strong> → user</li>
+                <li><strong>auditor</strong> → read-only dashboard, no certificate privileges</li>
+            </ul>
+            <p>Roles ensure every certificate is bound to a well-defined permission boundary.</p>
+
+            <h2>5. Deployment Topology</h2>
+            <p>Ephemera is packaged as a containerized environment with three cooperating services:</p>
+
+            <h3>A. Ephemera Core Service</h3>
+            <ul>
+                <li>Handles login, MFA, SSO, certificate signing, and ledger writing</li>
+                <li>Runs the hardened CA subsystem</li>
+                <li>Exposes a web UI and API for users and CLI tools</li>
+            </ul>
+
+            <h3>B. Reference SSH Target Service</h3>
+            <ul>
+                <li>A Linux OpenSSH instance configured to trust Ephemera’s CA</li>
+                <li>Enables full end-to-end verification of certificate issuance and authentication</li>
+                <li>Useful for local development, demos, and integration testing</li>
+            </ul>
+
+            <h3>C. Log Stream Service</h3>
+            <ul>
+                <li>Receives mirrored audit logs</li>
+                <li>Provides isolation and redundancy for audit data</li>
+                <li>Ensures no single component controls the logging pipeline</li>
+            </ul>
+
+            <h3>Cloud-Ready Extensions</h3>
+            <p>Ephemera’s architecture supports optional integrations:</p>
+            <ul>
+                <li>External audit storage backends (e.g., S3-compatible object stores)</li>
+                <li>External Key Management Systems (e.g., AWS KMS)</li>
+                <li>Remote deployments using orchestrated infrastructure</li>
+            </ul>
+            <p>These adapters allow advanced environments to extend Ephemera’s trust model without altering the
+                core
+                system.</p>
+        </div>
+    </section>
+</main>
+</div>
+<script src="script.js"></script>
+</body>
+
+</html>

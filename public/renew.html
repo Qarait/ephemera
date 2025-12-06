@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ephemera - Renew Certificate</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px;
+        }
+
+        #certResult {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Renew SSH Certificate</h1>
+        <p>Touch your security key to prove presence and renew your certificate.</p>
+
+        <div style="text-align: left;">
+            <label>SSH Public Key (id_ed25519.pub):</label>
+            <textarea id="renewPublicKey" placeholder="ssh-ed25519 AAAAC3..."></textarea>
+        </div>
+
+        <button id="renewBtn" class="btn-primary">Renew with WebAuthn</button>
+
+        <div id="statusMsg" style="margin-top: 10px;"></div>
+
+        <div id="certResult">
+            <h3>New Certificate</h3>
+            <textarea id="newCertContent" readonly></textarea>
+            <button id="downloadRenewBtn" class="btn-secondary">Download</button>
+            <p>Expires at: <span id="expiresAt"></span></p>
+        </div>
+
+        <p><a href="/">Back to Dashboard</a></p>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('renewBtn').addEventListener('click', startRenewal);
+            document.getElementById('downloadRenewBtn').addEventListener('click', () => {
+                const content = document.getElementById('newCertContent').value;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'id_ed25519-cert.pub';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            });
+        });
+    </script>
+</body>
+
+</html>

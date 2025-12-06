@@ -1,0 +1,9 @@
+default:
+  max_duration: "invalid_duration"
+
+policies:
+  - name: "Broken Rule"
+    match:
+      source_ip: ["999.999.999.999/32"]
+      hours: ["25:00-26:00"]
+    # Missing principals

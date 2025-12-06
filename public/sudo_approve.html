@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Sudo Request</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sudo-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .request-id {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        .approve-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .approve-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Ephemera</div>
+        </header>
+
+        <main>
+            <div class="sudo-card">
+                <h2>Sudo Access Request</h2>
+                <p>A request for elevated privileges has been initiated.</p>
+
+                <div class="request-id" id="requestIdDisplay">Loading...</div>
+
+                <p class="status" id="statusMessage">Waiting for approval...</p>
+
+                <button class="approve-btn" id="approveBtn" onclick="approveRequest()">
+                    Tap to Approve
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // WebAuthn Helpers (Inlined for simplicity)
+        function bufferToBase64URL(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let string = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                string += String.fromCharCode(bytes[i]);
+            }
+            return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function base64URLToBuffer(base64URL) {
+            const base64 = base64URL.replace(/-/g, '+').replace(/_/g, '/');
+            const padLen = (4 - (base64.length % 4)) % 4;
+            const padded = base64.padEnd(base64.length + padLen, '=');
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Get Request ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestId = urlParams.get('id');
+
+        document.getElementById('requestIdDisplay').textContent = requestId || "Invalid Request ID";
+
+        if (!requestId) {
+            document.getElementById('approveBtn').disabled = true;
+            document.getElementById('statusMessage').textContent = "Error: No Request ID provided.";
+        }
+
+        async function approveRequest() {
+            const btn = document.getElementById('approveBtn');
+            const status = document.getElementById('statusMessage');
+
+            btn.disabled = true;
+            btn.textContent = "Touch Security Key...";
+            status.textContent = "Initiating WebAuthn...";
+
+            try {
+                // 1. Get Options
+                const res = await fetch('/api/sudo/approve/options', { method: 'POST' });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed to start approval');
+                }
+                const options = await res.json();
+
+                // 2. Decode challenge & allowCredentials
+                options.challenge = base64URLToBuffer(options.challenge);
+                if (options.allowCredentials) {
+                    options.allowCredentials.forEach(c => {
+                        c.id = base64URLToBuffer(c.id);
+                    });
+                }
+
+                // 3. Get Assertion
+                const credential = await navigator.credentials.get({ publicKey: options });
+
+                // 4. Encode response
+                const credentialJSON = {
+                    id: credential.id,
+                    rawId: bufferToBase64URL(credential.rawId),
+                    response: {
+                        authenticatorData: bufferToBase64URL(credential.response.authenticatorData),
+                        clientDataJSON: bufferToBase64URL(credential.response.clientDataJSON),
+                        signature: bufferToBase64URL(credential.response.signature),
+                        userHandle: credential.response.userHandle ? bufferToBase64URL(credential.response.userHandle) : null,
+                    },
+                    type: credential.type,
+                };
+
+                // 5. Verify & Approve
+                const verifyRes = await fetch('/api/sudo/approve/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        assertion: credentialJSON
+                    })
+                });
+
+                const data = await verifyRes.json();
+
+                if (verifyRes.ok) {
+                    status.textContent = "Success! Access Granted.";
+                    status.style.color = "var(--primary)";
+                    btn.textContent = "Approved";
+                    setTimeout(() => {
+                        window.close();
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || "Approval failed");
+                }
+            } catch (e) {
+                console.error(e);
+                status.textContent = "Error: " + e.message;
+                status.style.color = "#ff4444";
+                btn.disabled = false;
+                btn.textContent = "Tap to Approve";
+            }
+        }
+    </script>
+</body>
+
+</html>
