@@ -1,4 +1,7 @@
-# policy.yaml
+# Ephemera Policy Configuration (Example)
+# =========================================
+# This is an EXAMPLE policy file. Customize for your organization.
+# See README.md for policy engine documentation.
 
 # Fallback rule if no policies match
 default:
@@ -9,7 +12,7 @@ policies:
   - name: "SRE-Prod"
     match:
       oidc_groups: ["aws-sre", "platform-admins"]
-      emails: ["cto@company.com"]
+      emails: ["cto@example.com"]
     principals: ["root", "admin", "ubuntu"]
     max_duration: 60m
 

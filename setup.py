@@ -2,12 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="ephemera-cli",
-    version="2.0.0",
+    version="3.0.0",
     description="Zero-Trust SSH Certificate Authority CLI",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Ephemera Team",
-    url="https://github.com/SSH-Pearl/ephemera",
+    url="https://github.com/Qarait/ephemera",
     packages=find_packages(),
     py_modules=["ephemera_cli"],
     install_requires=[

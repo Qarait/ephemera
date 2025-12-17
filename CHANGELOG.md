@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-12-16
+
+### Added
+- **Just-In-Time Sudo**: Privilege escalation requires WebAuthn MFA approval via `pam_exec` integration.
+- **Policy Engine (RBAC)**: YAML-based access control with matching by OIDC groups, emails, usernames, source IP (CIDR), time windows, and WebAuthn IDs.
+- **Shamir Encrypted Backups**: CA keys and database encrypted with AES-256-GCM, password split into Shamir shards.
+- **Zero-Downtime Key Rotation**: Multi-key lifecycle (active/previous/next) for seamless CA key rotation.
+- **Admin API Security**: `@require_admin` decorator with API key (`X-Admin-Token`) and session-based auth.
+- **CLI SUDO Visibility**: `ephemera sudo-history` and `ephemera status` show SUDO access state.
+- **Server Onboarding**: `ephemera server-setup` generates bootstrap scripts for SSH targets.
+
+### Security
+- Policy engine enforces max certificate duration per role.
+- All admin actions (rotate, revoke, policy reload) are audit logged.
+- Default dev secrets documented with production override requirements.
+
+---
+
 ## [2.0.0] - 2025-12-05
 
 ### Added
@@ -21,3 +39,4 @@ All notable changes to this project will be documented in this file.
 ### Security
 - Enforced non-exportable keys for CA.
 - Implemented one-way data diode logic for audit logs.
+
