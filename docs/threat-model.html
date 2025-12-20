@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Model — Ephemera</title>
+    <meta name="description"
+        content="Ephemera threat model: explicit non-goals, accepted risks, and security trade-offs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html" class="active">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Threat Model</h1>
+            <p class="lead">What Ephemera protects against, what it does not, and why.</p>
+
+            <h2>Threats &amp; Mitigations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Threat</th>
+                        <th>Mitigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stolen SSH private key</td>
+                        <td>Keys are ephemeral. Certificates expire in minutes, limiting exposure window.</td>
+                    </tr>
+                    <tr>
+                        <td>Credential phishing</td>
+                        <td>WebAuthn is phishing-resistant. TOTP is fallback only.</td>
+                    </tr>
+                    <tr>
+                        <td>Unauthorized privilege escalation</td>
+                        <td>JIT Sudo requires fresh MFA approval per session. Logged centrally.</td>
+                    </tr>
+                    <tr>
+                        <td>Audit log tampering</td>
+                        <td>Merkle-chained ledger. Remote syslog mirroring to isolated sink.</td>
+                    </tr>
+                    <tr>
+                        <td>CA key compromise</td>
+                        <td>Encrypted at rest. Zero-downtime rotation with multi-CA trust model.</td>
+                    </tr>
+                    <tr>
+                        <td>Single-point recovery failure</td>
+                        <td>Shamir secret sharing (k-of-n) for backup decryption.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Explicit Non-Goals</h2>
+            <p>The following are intentionally excluded from Ephemera's scope:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SSH MITM Proxy</td>
+                        <td>Violates end-to-end encryption; adds attack surface.</td>
+                    </tr>
+                    <tr>
+                        <td>Custom SSH Protocol</td>
+                        <td>Unnecessary complexity. Native OpenSSH is sufficient.</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Dependency</td>
+                        <td>Designed for sovereign, air-gapped deployments.</td>
+                    </tr>
+                    <tr>
+                        <td>Session Replay UI</td>
+                        <td>Recording research is decentralized; no central player planned.</td>
+                    </tr>
+                    <tr>
+                        <td>QR-Based Shard Recovery</td>
+                        <td>JSON file shards are simpler and more portable.</td>
+                    </tr>
+                    <tr>
+                        <td>C PAM Module</td>
+                        <td><code>pam_exec</code> with Python is portable and auditable.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Accepted Risks</h2>
+            <p>
+                These risks are inherent to the threat model and are accepted trade-offs:
+            </p>
+            <ul>
+                <li>
+                    <strong>Endpoint compromise during active session</strong> —
+                    If an attacker compromises the user's device while a valid certificate exists,
+                    the session remains accessible until expiry.
+                </li>
+                <li>
+                    <strong>Denial-of-service against CA availability</strong> —
+                    If the CA server is unreachable, no new certificates can be issued.
+                    Existing sessions continue until their certificates expire.
+                </li>
+                <li>
+                    <strong>Human quorum collusion during recovery</strong> —
+                    Shamir shards require k-of-n custodians. If k custodians collude,
+                    they can recover the backup password.
+                </li>
+            </ul>
+
+            <div class="note">
+                <div class="note-title">Security Disclosure Philosophy</div>
+                <p>
+                    Certain implementation details are intentionally omitted from public documentation.
+                    Ephemera follows a "disclose-the-model, protect-the-keys" philosophy.
+                </p>
+            </div>
+
+            <div class="note">
+                <div class="note-title">Why admit limits?</div>
+                Explicit acknowledgment of accepted risks increases trust.
+                No system is without trade-offs; claiming otherwise reduces credibility.
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.1.0</span>
+            <a href="https://github.com/ephemerassh/ephemera">GitHub</a>
+        </div>
+    </footer>
+</body>
+
+</html>

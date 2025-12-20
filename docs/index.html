@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ephemera — A Zero-Trust SSH Certificate Authority</title>
+    <meta name="description"
+        content="Ephemera is a sovereign, air-gapped SSH Certificate Authority that enforces Zero Trust principles. Short-lived certificates, WebAuthn MFA, tamper-proof audit.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html" class="active">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Ephemera</h1>
+            <p class="lead">A Zero-Trust SSH Certificate Authority</p>
+
+            <p>
+                Ephemera is a sovereign, air-gapped SSH Certificate Authority designed to replace
+                static keys with short-lived, identity-bound certificates. No long-lived private
+                keys on user devices. Certificates are issued just-in-time and expire automatically.
+            </p>
+
+            <div class="flow">
+                <span>User</span>
+                <span class="flow-arrow">→</span>
+                <span>WebAuthn</span>
+                <span class="flow-arrow">→</span>
+                <span>Short-lived cert</span>
+                <span class="flow-arrow">→</span>
+                <span>SSH</span>
+                <span class="flow-arrow">→</span>
+                <span>Logged sudo</span>
+            </div>
+
+            <h2>Properties</h2>
+            <ul>
+                <li><strong>Zero-Trust</strong> — No permanent SSH keys. Certificates expire in minutes.</li>
+                <li><strong>WebAuthn MFA</strong> — Phishing-resistant authentication via hardware keys or biometrics.
+                </li>
+                <li><strong>JIT Sudo</strong> — Privilege escalation requires fresh MFA approval, logged centrally.</li>
+                <li><strong>Tamper-Evident Audit</strong> — Merkle-chained ledger. History cannot be rewritten without
+                    detection.</li>
+                <li><strong>Sovereign Recovery</strong> — Shamir secret sharing for encrypted backups. No cloud
+                    dependency.</li>
+            </ul>
+
+            <h2>Documentation</h2>
+            <ul>
+                <li><a href="architecture.html">Architecture</a> — Components and trust zones</li>
+                <li><a href="threat-model.html">Threat Model</a> — Non-goals and accepted risks</li>
+                <li><a href="cli.html">CLI Workflow</a> — Commands and configuration</li>
+                <li><a href="disaster-recovery.html">Disaster Recovery</a> — Backup and restore procedures</li>
+            </ul>
+
+            <h2>Source</h2>
+            <p>
+                Ephemera is open source under the Apache 2.0 license.<br>
+                <a href="https://github.com/ephemerassh/ephemera">github.com/ephemerassh/ephemera</a>
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.1.0 • Architecture and threat model reflect current
+                release.</span>
+            <a href="https://github.com/ephemerassh/ephemera">GitHub</a>
+        </div>
+    </footer>
+</body>
+
+</html>

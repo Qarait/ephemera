@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture — Ephemera</title>
+    <meta name="description"
+        content="Ephemera architecture: Flask server, OpenSSH CA, WebAuthn MFA, and tamper-evident audit ledger.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html" class="active">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Architecture</h1>
+            <p class="lead">Zero-Trust model where no long-lived SSH keys exist on user devices.</p>
+
+            <div class="note">
+                <div class="note-title">Disclosure</div>
+                This diagram reflects the current implementation. Some operational hardening details
+                are intentionally omitted from public documentation.
+            </div>
+
+            <h2>Components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Flask Server</td>
+                        <td>Handles authentication, MFA verification, and certificate signing requests.</td>
+                    </tr>
+                    <tr>
+                        <td>OpenSSH CA</td>
+                        <td>Signs user public keys with a generated CA key. Certificates expire in minutes.</td>
+                    </tr>
+                    <tr>
+                        <td>WebAuthn</td>
+                        <td>Provides phishing-resistant MFA using hardware keys or biometrics.</td>
+                    </tr>
+                    <tr>
+                        <td>Audit Ledger</td>
+                        <td>Hash-chained log of all issuance events. Tamper-evident by design.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Security Properties</h2>
+            <ul>
+                <li><strong>CA Key</strong> — Encrypted at rest, never leaves the container. Stored with 0400
+                    permissions.</li>
+                <li><strong>Audit</strong> — Tamper-evident ledger with optional remote syslog mirroring.</li>
+                <li><strong>Ephemeral</strong> — Certificates expire in minutes by default (configurable via policy).
+                </li>
+            </ul>
+
+            <h2>Trust Zones</h2>
+            <p>
+                The CA private key is the root of trust. It is generated at startup if missing and stored
+                in a Docker volume (<code>/app/ca_store</code>). The volume is never exposed to unprivileged
+                containers.
+            </p>
+            <p>
+                Certificate issuance requires successful WebAuthn or TOTP verification. The audit ledger
+                records every issuance with a cryptographic chain to detect tampering.
+            </p>
+
+            <h2>Diagram</h2>
+            <p>
+                <img src="../assets/diagrams/ephemera_v2_architecture.png" alt="Ephemera Architecture Diagram"
+                    style="max-width: 100%; border: 1px solid var(--border); border-radius: 6px;">
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.1.0</span>
+            <a href="https://github.com/ephemerassh/ephemera">GitHub</a>
+        </div>
+    </footer>
+</body>
+
+</html>

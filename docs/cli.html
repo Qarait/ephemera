@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Workflow — Ephemera</title>
+    <meta name="description" content="Ephemera CLI commands: init, login, renew, status, and policy configuration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html" class="active">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>CLI Workflow</h1>
+            <p class="lead">Commands for authentication, certificate renewal, and status.</p>
+
+            <h2>Installation</h2>
+            <pre><code>pip install ephemera-cli</code></pre>
+
+            <h2>Setup</h2>
+            <p>Initialize your SSH configuration to use Ephemera:</p>
+            <pre><code>ephemera init</code></pre>
+            <p>This configures your <code>~/.ssh/config</code> to use certificates from the CA.</p>
+
+            <h2>Authentication</h2>
+            <p>Login to the CA server:</p>
+            <pre><code>ephemera login</code></pre>
+            <p>You will be prompted for WebAuthn (hardware key) or TOTP verification.</p>
+
+            <h2>Certificate Renewal</h2>
+            <p>Request a new short-lived certificate:</p>
+            <pre><code>ephemera renew</code></pre>
+            <p>Certificates expire in 5 minutes by default. Renewal requires fresh MFA.</p>
+
+            <h2>Status</h2>
+            <p>Check current certificate and sudo state:</p>
+            <pre><code>ephemera status</code></pre>
+            <p>Shows certificate expiry, current user, and JIT sudo availability.</p>
+
+            <h2>Sudo History</h2>
+            <p>View privilege escalation events:</p>
+            <pre><code>ephemera sudo-history</code></pre>
+
+            <h2>Policy Configuration</h2>
+            <p>
+                Access control is managed through <code>policy.yaml</code>.
+                Example configuration:
+            </p>
+            <pre><code># Define Roles
+roles:
+  developer:
+    can_request_cert: true
+    max_cert_duration: 300  # 5 minutes
+    allowed_principals: ["dev-user"]
+    
+  admin:
+    can_request_cert: true
+    max_cert_duration: 3600 # 1 hour
+    allowed_principals: ["root", "admin"]
+    can_approve_sudo: true
+
+# Define Rules
+rules:
+  # Developers can only access dev servers
+  - role: developer
+    resource: "dev-*"
+    action: "ssh"
+    effect: allow
+
+  # Admins can access everything with MFA
+  - role: admin
+    resource: "*"
+    action: "ssh"
+    effect: allow
+    conditions:
+      mfa_required: true</code></pre>
+
+            <h2>Connect</h2>
+            <p>After renewal, connect normally:</p>
+            <pre><code>ssh user@your-server</code></pre>
+            <p>OpenSSH uses the certificate automatically. No key file management required.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.1.0</span>
+            <a href="https://github.com/ephemerassh/ephemera">GitHub</a>
+        </div>
+    </footer>
+</body>
+
+</html>
