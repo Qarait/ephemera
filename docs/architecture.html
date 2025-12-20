@@ -41,32 +41,34 @@
             </div>
 
             <h2>Components</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Component</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Flask Server</td>
-                        <td>Handles authentication, MFA verification, and certificate signing requests.</td>
-                    </tr>
-                    <tr>
-                        <td>OpenSSH CA</td>
-                        <td>Signs user public keys with a generated CA key. Certificates expire in minutes.</td>
-                    </tr>
-                    <tr>
-                        <td>WebAuthn</td>
-                        <td>Provides phishing-resistant MFA using hardware keys or biometrics.</td>
-                    </tr>
-                    <tr>
-                        <td>Audit Ledger</td>
-                        <td>Hash-chained log of all issuance events. Tamper-evident by design.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Flask Server</td>
+                            <td>Handles authentication, MFA verification, and certificate signing requests.</td>
+                        </tr>
+                        <tr>
+                            <td>OpenSSH CA</td>
+                            <td>Signs user public keys with a generated CA key. Certificates expire in minutes.</td>
+                        </tr>
+                        <tr>
+                            <td>WebAuthn</td>
+                            <td>Provides phishing-resistant MFA using hardware keys or biometrics.</td>
+                        </tr>
+                        <tr>
+                            <td>Audit Ledger</td>
+                            <td>Hash-chained log of all issuance events. Tamper-evident by design.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h2>Security Properties</h2>
             <ul>
@@ -90,7 +92,7 @@
 
             <h2>Diagram</h2>
             <p>
-                <img src="../assets/diagrams/ephemera_v2_architecture.png" alt="Ephemera Architecture Diagram"
+                <img src="assets/diagrams/ephemera_v2_architecture.png" alt="Ephemera Architecture Diagram"
                     style="max-width: 100%; border: 1px solid var(--border); border-radius: 6px;">
             </p>
         </div>

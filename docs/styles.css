@@ -220,14 +220,22 @@ pre code {
 }
 
 /* Tables */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 16px 0 24px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 16px 0 24px;
   font-size: 0.9rem;
+  min-width: 500px;
+  /* Ensure table doesn't get too squished */
 }
 
-th, td {
+th,
+td {
   text-align: left;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
@@ -248,7 +256,8 @@ tr:last-child td {
 }
 
 /* Lists */
-ul, ol {
+ul,
+ol {
   margin: 16px 0 24px;
   padding-left: 24px;
   color: var(--text-secondary);
@@ -264,23 +273,23 @@ li {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   nav {
     flex-wrap: wrap;
     justify-content: center;
     gap: 16px;
   }
-  
+
   footer .container {
     flex-direction: column;
     gap: 12px;
     text-align: center;
   }
-  
+
   h1 {
     font-size: 1.6rem;
   }
-  
+
   .flow {
     padding: 20px;
     font-size: 0.85rem;

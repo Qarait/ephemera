@@ -35,77 +35,81 @@
             <p class="lead">What Ephemera protects against, what it does not, and why.</p>
 
             <h2>Threats &amp; Mitigations</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Threat</th>
-                        <th>Mitigation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Stolen SSH private key</td>
-                        <td>Keys are ephemeral. Certificates expire in minutes, limiting exposure window.</td>
-                    </tr>
-                    <tr>
-                        <td>Credential phishing</td>
-                        <td>WebAuthn is phishing-resistant. TOTP is fallback only.</td>
-                    </tr>
-                    <tr>
-                        <td>Unauthorized privilege escalation</td>
-                        <td>JIT Sudo requires fresh MFA approval per session. Logged centrally.</td>
-                    </tr>
-                    <tr>
-                        <td>Audit log tampering</td>
-                        <td>Merkle-chained ledger. Remote syslog mirroring to isolated sink.</td>
-                    </tr>
-                    <tr>
-                        <td>CA key compromise</td>
-                        <td>Encrypted at rest. Zero-downtime rotation with multi-CA trust model.</td>
-                    </tr>
-                    <tr>
-                        <td>Single-point recovery failure</td>
-                        <td>Shamir secret sharing (k-of-n) for backup decryption.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Threat</th>
+                            <th>Mitigation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Stolen SSH private key</td>
+                            <td>Keys are ephemeral. Certificates expire in minutes, limiting exposure window.</td>
+                        </tr>
+                        <tr>
+                            <td>Credential phishing</td>
+                            <td>WebAuthn is phishing-resistant. TOTP is fallback only.</td>
+                        </tr>
+                        <tr>
+                            <td>Unauthorized privilege escalation</td>
+                            <td>JIT Sudo requires fresh MFA approval per session. Logged centrally.</td>
+                        </tr>
+                        <tr>
+                            <td>Audit log tampering</td>
+                            <td>Merkle-chained ledger. Remote syslog mirroring to isolated sink.</td>
+                        </tr>
+                        <tr>
+                            <td>CA key compromise</td>
+                            <td>Encrypted at rest. Zero-downtime rotation with multi-CA trust model.</td>
+                        </tr>
+                        <tr>
+                            <td>Single-point recovery failure</td>
+                            <td>Shamir secret sharing (k-of-n) for backup decryption.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h2>Explicit Non-Goals</h2>
             <p>The following are intentionally excluded from Ephemera's scope:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>SSH MITM Proxy</td>
-                        <td>Violates end-to-end encryption; adds attack surface.</td>
-                    </tr>
-                    <tr>
-                        <td>Custom SSH Protocol</td>
-                        <td>Unnecessary complexity. Native OpenSSH is sufficient.</td>
-                    </tr>
-                    <tr>
-                        <td>Cloud Dependency</td>
-                        <td>Designed for sovereign, air-gapped deployments.</td>
-                    </tr>
-                    <tr>
-                        <td>Session Replay UI</td>
-                        <td>Recording research is decentralized; no central player planned.</td>
-                    </tr>
-                    <tr>
-                        <td>QR-Based Shard Recovery</td>
-                        <td>JSON file shards are simpler and more portable.</td>
-                    </tr>
-                    <tr>
-                        <td>C PAM Module</td>
-                        <td><code>pam_exec</code> with Python is portable and auditable.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SSH MITM Proxy</td>
+                            <td>Violates end-to-end encryption; adds attack surface.</td>
+                        </tr>
+                        <tr>
+                            <td>Custom SSH Protocol</td>
+                            <td>Unnecessary complexity. Native OpenSSH is sufficient.</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Dependency</td>
+                            <td>Designed for sovereign, air-gapped deployments.</td>
+                        </tr>
+                        <tr>
+                            <td>Session Replay UI</td>
+                            <td>Recording research is decentralized; no central player planned.</td>
+                        </tr>
+                        <tr>
+                            <td>QR-Based Shard Recovery</td>
+                            <td>JSON file shards are simpler and more portable.</td>
+                        </tr>
+                        <tr>
+                            <td>C PAM Module</td>
+                            <td><code>pam_exec</code> with Python is portable and auditable.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h2>Accepted Risks</h2>
             <p>
