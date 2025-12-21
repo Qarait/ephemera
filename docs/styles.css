@@ -82,6 +82,21 @@ nav a.active {
   color: var(--text-primary);
 }
 
+.repo-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.repo-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  text-decoration: none !important;
+}
+
 main {
   padding: 48px 0 80px;
 }
