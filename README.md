@@ -9,6 +9,10 @@
 
 **Ephemera** is a sovereign, air-gapped SSH Certificate Authority that enforces **Zero Trust** principles for your infrastructure. It eliminates static SSH keys, enforces MFA for every session, and provides tamper-proof audit trails.
 
+> [!NOTE]
+> **Canonical Source**: [Codeberg](https://codeberg.org/Qarait1/ephemera)  
+> **GitHub Mirror**: [GitHub](https://github.com/Qarait/ephemera) (for availability and hosting)
+
 ![Architecture Diagram](assets/diagrams/ephemera_v2_architecture.png)
 
 ## 🌟 Killer Features
