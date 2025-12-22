@@ -126,25 +126,29 @@
                 </table>
             </div>
 
-            <h2>Accepted Risks</h2>
+            <h2>Inherent Security Trade-offs</h2>
             <p>
-                These risks are inherent to the threat model and are accepted trade-offs:
+                The following behaviors are inherent properties of Ephemera's technical design (time-bound
+                credentials, availability models, and quorum cryptography) and are documented as expected
+                boundaries of the threat model:
             </p>
             <ul>
                 <li>
-                    <strong>Endpoint compromise during active session</strong> —
-                    If an attacker compromises the user's device while a valid certificate exists,
-                    the session remains accessible until expiry.
+                    <strong>Post-authorization credential persistence</strong> —
+                    As an inherent property of time-bound credentials, a valid certificate remains
+                    authorized until its cryptographic expiry even if the initiating endpoint is
+                    subsequently compromised.
                 </li>
                 <li>
-                    <strong>Denial-of-service against CA availability</strong> —
-                    If the CA server is unreachable, no new certificates can be issued.
-                    Existing sessions continue until their certificates expire.
+                    <strong>Decoupled availability and issuance</strong> —
+                    In a sovereign deployment model, the inability to reach the CA server prevents new
+                    issuance but does not revoke existing, valid sessions until their natural expiration.
                 </li>
                 <li>
-                    <strong>Human quorum collusion during recovery</strong> —
-                    Shamir shards require k-of-n custodians. If k custodians collude,
-                    they can recover the backup password.
+                    <strong>Quorum-based recovery boundaries</strong> —
+                    Quorum cryptography (k-of-n) technically permits recovery if k custodians collude.
+                    This is an intended property of the cryptographic model selected for sovereign disaster
+                    recovery.
                 </li>
             </ul>
 
@@ -157,9 +161,10 @@
             </div>
 
             <div class="note">
-                <div class="note-title">Why admit limits?</div>
-                Explicit acknowledgment of accepted risks increases trust.
-                No system is without trade-offs; claiming otherwise reduces credibility.
+                <div class="note-title">Commitment to Transparent Security</div>
+                Explicit acknowledgment of security boundaries increases systemic trust. In high-assurance
+                infrastructure, documenting the technical limits of cryptographic models is essential for
+                informed risk management.
             </div>
         </div>
     </main>
