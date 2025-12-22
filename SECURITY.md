@@ -1,46 +1,30 @@
 # Security Policy
 
-## Supported Versions
+Ephemera is a security-sensitive project. We take vulnerability reports seriously and appreciate responsible disclosure.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 3.0.x   | :white_check_mark: |
-| 2.0.x   | :white_check_mark: |
-| < 2.0   | :x:                |
+## Supported Versions
+Only the latest released version is supported for security updates.
 
 ## Reporting a Vulnerability
 
-We take security seriously. If you discover a security vulnerability in Ephemera, please do **NOT** open a public issue.
+Please **do not** report security vulnerabilities through public issues.
 
-Instead, please report it responsibly:
+Instead, use one of the following private disclosure methods:
 
-1.  Email us at **security@ephemera.dev** (or open a draft security advisory on GitHub if enabled).
-2.  Provide a detailed description of the vulnerability and steps to reproduce it.
-3.  We will acknowledge your report within 48 hours and work with you to resolve the issue.
+- Email: security@keemail.me  
+- Or open a **private** security advisory via Codeberg (preferred when available)
 
-## Production Security Requirements
+When reporting, please include:
+- A clear description of the issue
+- Steps to reproduce (if applicable)
+- Potential impact
+- Any relevant logs or proof-of-concept
 
-> **⚠️ IMPORTANT**: Ephemera uses fail-safe defaults that are NOT suitable for production.
+We aim to acknowledge reports within **72 hours**.
 
-Before deploying to production, you **MUST** set these environment variables:
+## Disclosure Process
 
-| Variable | Default (Dev Only) | Production Requirement |
-|----------|-------------------|------------------------|
-| `FLASK_SECRET_KEY` | `dev_secret_key` | Random 32+ character string |
-| `CA_MASTER_PASSWORD` | `ephemera-dev-secret` | Strong passphrase (16+ characters) |
-| `ADMIN_API_KEY` | (none) | Random token for admin API access |
-
-**Fail-Fast Behavior**: If default secrets are detected in production, the application will log warnings at startup. We strongly recommend adding startup checks in your deployment pipeline to reject default credentials.
-
-## Security Features
-
-Ephemera is designed with security in mind:
--   **Zero-Trust**: No long-lived keys.
--   **MFA Enforcement**: WebAuthn/TOTP required.
--   **Audit Logging**: Tamper-evident hash chain.
--   **Encryption**: CA keys encrypted at rest.
--   **JIT Sudo**: Privilege escalation requires fresh MFA approval.
--   **RBAC Policy Engine**: Fine-grained access control.
-
-Thank you for helping keep Ephemera secure!
-
+- Vulnerabilities are reviewed and validated
+- Fixes are developed and tested
+- Coordinated disclosure is preferred
+- Credit is given to reporters unless anonymity is requested
