@@ -59,6 +59,17 @@
             <pre><code>ephemera login</code></pre>
             <p>You will be prompted for WebAuthn (hardware key) or TOTP verification.</p>
 
+            <h2>YubiKey / WebAuthn Setup</h2>
+            <div class="note">
+                <p>
+                    <strong>1. Run authentication</strong> — Run <code>ephemera login</code>.<br>
+                    <strong>2. Hardware Verification</strong> — When prompted, insert and touch your YubiKey.<br>
+                    <strong>3. Binding</strong> — The credential is registered and cryptographically bound to your
+                    account.<br>
+                    <strong>4. Access</strong> — Future SSH renewals and sudo approvals require physical presence.
+                </p>
+            </div>
+
             <h2>Certificate Renewal</h2>
             <p>Request a new short-lived certificate:</p>
             <pre><code>ephemera renew</code></pre>
