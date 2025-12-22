@@ -138,6 +138,8 @@ rules:
 - See [SECURITY_MODEL.md](SECURITY_MODEL.md) for threat assumptions and trust boundaries.
 - See [docs/](docs/) for additional guides.
 
+## Security
+Please see [SECURITY.md](SECURITY.md) for responsible disclosure information.
+
 > [!TIP]
 > **Threat model and security assumptions are documented [here](SECURITY_MODEL.md). Feedback and critique are welcome.**
-See [docs/](docs/) for additional guides.
