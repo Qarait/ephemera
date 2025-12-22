@@ -62,6 +62,12 @@
             <h2>YubiKey / WebAuthn Setup</h2>
             <div class="note">
                 <p>
+                    <em>Ephemera uses WebAuthn-compatible hardware keys (such as YubiKey) to enforce physical presence
+                        for SSH certificate issuance and sudo approval. Technical details are available in the <a
+                            href="webauthn.html" style="color: var(--accent); text-decoration: underline;">WebAuthn
+                            Guide</a>.</em>
+                </p>
+                <p>
                     <strong>1. Run authentication</strong> — Run <code>ephemera login</code>.<br>
                     <strong>2. Hardware Verification</strong> — When prompted, insert and touch your YubiKey.<br>
                     <strong>3. Binding</strong> — The credential is registered and cryptographically bound to your

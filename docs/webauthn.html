@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAuthn & Hardware Security — Ephemera</title>
+    <meta name="description"
+        content="Technical details on Ephemera's WebAuthn implementation for phishing-resistant SSH authentication.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:site_name" content="Ephemera">
+    <meta property="og:title" content="WebAuthn & Hardware Security — Ephemera">
+    <meta property="og:description" content="Why Ephemera uses WebAuthn for high-assurance SSH access.">
+    <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta property="og:url" content="https://qarait.github.io/ephemera/webauthn.html">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WebAuthn & Hardware Security — Ephemera">
+    <meta name="twitter:description" content="Why Ephemera uses WebAuthn for high-assurance SSH access.">
+    <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="webauthn.html" class="active">WebAuthn</a>
+                <a href="https://codeberg.org/Qarait1/ephemera" class="repo-btn">Repository</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>WebAuthn & Hardware Security</h1>
+            <p class="lead">Phishing-resistant, hardware-backed authentication for the modern terminal.</p>
+
+            <p>
+                Ephemera uses <strong>WebAuthn</strong> (FIDO2) as its primary authentication factor to eliminate the
+                vulnerabilities associated with static passwords and legacy TOTP. By requiring a physical touch on a
+                hardware security key, Ephemera ensures that every certificate issuance is the result of a deliberate,
+                human action.
+            </p>
+
+            <h2>Why WebAuthn?</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>WebAuthn (Ephemera)</th>
+                            <th>Traditional MFA (SMS/TOTP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Phishing Resistance</strong></td>
+                            <td>Cryptographically bound to the domain.</td>
+                            <td>Vulnerable to proxy/lookalike sites.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Physical Presence</strong></td>
+                            <td>Requires physical touch (User Presence).</td>
+                            <td>Can be automated by remote attackers.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Private Key Safety</strong></td>
+                            <td>Key never leaves the hardware device.</td>
+                            <td>Secrets stored on mobile/desktop OS.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Interoperability</h2>
+            <p>
+                Ephemera supports all <strong>FIDO2/WebAuthn compatible hardware keys</strong>, including:
+            </p>
+            <ul>
+                <li><strong>YubiKey</strong> (5 Series, Security Key Series)</li>
+                <li><strong>Google Titan</strong> Security Keys</li>
+                <li><strong>Nitrokey</strong> (3 Series)</li>
+                <li>Built-in platform authenticators (TouchID, Windows Hello)</li>
+            </ul>
+
+            <h2>Implementation Details</h2>
+            <p>
+                When a user runs <code>ephemera login</code>, the CA server generates a unique cryptographic challenge.
+                The client-side CLI interacts with the hardware key via the system's WebAuthn API. The key signs the
+                challenge, proving both the user's presence and the integrity of the hardware device.
+            </p>
+
+            <div class="note">
+                <div class="note-title">Sovereign Air-Gap Support</div>
+                <p>
+                    Because Ephemera is designed for sovereign use, the WebAuthn implementation does not rely on
+                    external cloud verifiers. All cryptographic validation happens locally within the Ephemera CA
+                    server container.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.1.0 • Last Updated: 2025-12-19 • Source code (canonical):
+                Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
+                availability.<br>
+                <strong>Threat model and security assumptions are documented <a
+                        href="https://codeberg.org/Qarait1/ephemera/src/branch/main/SECURITY_MODEL.md"
+                        style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
+                    welcome.</strong></span>
+            <a href="https://codeberg.org/Qarait1/ephemera">Codeberg</a>
+        </div>
+    </footer>
+</body>
+
+</html>
