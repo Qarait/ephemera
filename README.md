@@ -134,5 +134,10 @@ rules:
 ```
 
 ## Documentation
-See [ARCHITECTURE.md](ARCHITECTURE.md) for design details.
+- See [ARCHITECTURE.md](ARCHITECTURE.md) for design details.
+- See [SECURITY_MODEL.md](SECURITY_MODEL.md) for threat assumptions and trust boundaries.
+- See [docs/](docs/) for additional guides.
+
+> [!TIP]
+> **Threat model and security assumptions are documented [here](SECURITY_MODEL.md). Feedback and critique are welcome.**
 See [docs/](docs/) for additional guides.
