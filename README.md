@@ -1,13 +1,13 @@
 # Ephemera — Zero-Trust SSH Certificate Authority
 
+[![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/github/v/release/ephemerassh/ephemera)
 ![License](https://img.shields.io/github/license/ephemerassh/ephemera)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey)
-![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-yellow.svg)
 
-**Ephemera** is a sovereign, air-gapped SSH Certificate Authority that enforces **Zero Trust** principles for your infrastructure. It eliminates static SSH keys, enforces MFA for every session, and provides tamper-proof audit trails.
+**Ephemera** is a lightweight, self-hosted SSH Certificate Authority designed to enforce Zero-Trust access for infrastructure. It replaces static SSH keys with short-lived certificates, integrates hardware-backed WebAuthn MFA, and maintains cryptographically verifiable audit trails.
 
 > [!NOTE]
 > **Canonical Source**: [Codeberg](https://codeberg.org/Qarait1/ephemera)  
@@ -15,22 +15,24 @@
 
 ![Architecture Diagram](assets/diagrams/ephemera_v2_architecture.png)
 
-## 🌟 Killer Features
+## Positioning
 
-### 🔐 Just-in-Time Access
-No more permanent keys. Certificates expire in **5 minutes** by default. Developers request access only when needed.
+### Best For
+- **Sovereign Deployments**: Teams requiring full ownership of their CA without external cloud dependencies.
+- **Air-Gapped Environments**: Designed to operate without outbound internet access once deployed.
+- **Minimal Overhead**: Organizations that need strong SSH security without the complexity of managing a full secrets platform.
 
-### 👆 WebAuthn MFA Enforcement
-Every SSH session requires a physical touch (YubiKey, TouchID). Phishing-resistant authentication is baked in.
+### Not For
+- **Enterprise IAM Consolidation**: If you require deep integration with complex AD/LDAP hierarchies, **Teleport** or **HashiCorp Vault** are better suited.
+- **Managed Service Preference**: Ephemera is self-hosted and does not offer a SaaS variant.
 
-### 🛡️ Sovereign Disaster Recovery
-**Shamir's Secret Sharing** splits your encrypted backup password into physical shards. No single person can compromise the CA, but a quorum can restore it.
+## Key Capabilities
 
-### 📜 Tamper-Proof Audit Logs
-All actions are logged to a **Merkle-chained** ledger. Logs are immutable and can be verified cryptographically.
-
-### ⚡ Just-in-Time Sudo
-Privilege escalation (`sudo`) is no longer static. It requires a fresh MFA approval and is logged centrally.
+- **Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
+- **WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
+- **Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
+- **Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
+- **Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
 
 ![Sudo Hang](assets/screenshots/sudo_hang.png)
 
@@ -140,6 +142,8 @@ rules:
 
 ## Security
 Please see [SECURITY.md](SECURITY.md) for responsible disclosure information.
+
+Looking to contribute? Check out our [Small Tasks for New Contributors](CONTRIBUTING.md#small-tasks-for-new-contributors).
 
 > [!TIP]
 > **Threat model and security assumptions are documented [here](SECURITY_MODEL.md). Feedback and critique are welcome.**
