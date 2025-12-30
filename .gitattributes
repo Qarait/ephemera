@@ -1,0 +1,6 @@
+# Vendor documentation and assets to fix language classification
+docs/* linguist-vendored
+assets/* linguist-vendored
+promo/* linguist-vendored
+public/* linguist-vendored
+*.html linguist-vendored
