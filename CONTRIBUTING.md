@@ -26,6 +26,16 @@ Thank you for your interest in contributing to Ephemera! We welcome contribution
 -   Keep code clean and well-documented.
 -   Ensure all new features are covered by tests (where applicable).
 
+## Small Tasks for New Contributors
+
+We maintain a list of small, focused tasks that are perfect for those looking to make their first contribution to Ephemera. These include:
+
+*   Improving documentation or adding examples.
+*   Adding test cases for existing features.
+*   Small CLI enhancements or bug fixes.
+
+You can find these tasks by looking for the [**good first issue**](https://github.com/Qarait/ephemera/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) label in our issue tracker.
+
 ## Reporting Issues
 
 If you find a bug or have a feature request, please open an issue on the GitHub repository. Provide as much detail as possible to help us understand and resolve the issue.
