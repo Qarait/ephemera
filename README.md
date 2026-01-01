@@ -36,7 +36,24 @@
 
 ![Sudo Hang](assets/screenshots/sudo_hang.png)
 
+## Experimental: Trust Budgeting (Opt-in)
+
+Ephemera includes an experimental, opt-in governance primitive called Trust Budgeting.
+
+Trust Budgeting limits cumulative privileged authority at certificate issuance time by treating access as a finite, visible resource. Each certificate issuance consumes an explicit budget. When the budget is exhausted, normal issuance stops until the budget resets or a separate emergency (break-glass) path is used.
+
+This mechanism:
+- operates only at certificate issuance time
+- introduces no runtime monitoring or agents
+- is disabled by default
+- is not a security guarantee
+
+Trust Budgeting is experimental and may change or be removed.
+
+**Documentation**: [docs/trust_budgeting.md](docs/trust_budgeting.md)
+
 ## Quick Start
+
 
 ### 1. Server Setup (Docker)
 

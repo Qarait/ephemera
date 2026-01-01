@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Ephemera - Zero-Trust SSH</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated background grid */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(60px, 60px);
+            }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 136, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-1000px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Main container - CENTERED */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* Slide system */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+        }
+
+        /* Title slide */
+        .logo {
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -4px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.3));
+            }
+
+            to {
+                filter: drop-shadow(0 0 40px rgba(0, 255, 136, 0.6));
+            }
+        }
+
+        .tagline {
+            font-size: 36px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 20px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+        }
+
+        .version-badge {
+            margin-top: 40px;
+            padding: 12px 32px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: #00ff88;
+        }
+
+        /* Problem slide */
+        .problem-text {
+            font-size: 48px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 900px;
+            line-height: 1.4;
+        }
+
+        .problem-text strong {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .crossed-out {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Feature slides */
+        .feature-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: scale(0) rotate(-10deg);
+            }
+
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .feature-title {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-subtitle {
+            font-size: 26px;
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .feature-description {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .feature-points {
+            display: flex;
+            gap: 50px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-point {
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.6s forwards;
+        }
+
+        .feature-point:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .feature-point:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .feature-point:nth-child(3) {
+            animation-delay: 0.7s;
+        }
+
+        .feature-point:nth-child(4) {
+            animation-delay: 0.9s;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .point-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 212, 255, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 12px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .point-text {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 180px;
+        }
+
+        /* Terminal mockup */
+        .terminal {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            padding: 20px 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            min-width: 600px;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red {
+            background: #ff5f57;
+        }
+
+        .terminal-dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .terminal-dot.green {
+            background: #28c840;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            animation: typeLine 0.5s forwards;
+            margin: 4px 0;
+        }
+
+        .terminal-line:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .terminal-line:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .terminal-line:nth-child(4) {
+            animation-delay: 1.0s;
+        }
+
+        .terminal-line:nth-child(5) {
+            animation-delay: 1.4s;
+        }
+
+        .terminal-line:nth-child(6) {
+            animation-delay: 1.8s;
+        }
+
+        @keyframes typeLine {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .prompt {
+            color: #00ff88;
+        }
+
+        .command {
+            color: #fff;
+        }
+
+        .output {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .success {
+            color: #28c840;
+        }
+
+        .warning {
+            color: #ffbd2e;
+        }
+
+        /* Stats section */
+        .stats {
+            display: flex;
+            gap: 80px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.6s forwards;
+        }
+
+        .stat:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .stat:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .stat:nth-child(3) {
+            animation-delay: 0.7s;
+        }
+
+        .stat-value {
+            font-size: 64px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+
+        /* Final slide */
+        .cta-box {
+            padding: 50px 80px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(124, 58, 237, 0.1));
+            border-radius: 24px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            color: #00ff88;
+        }
+
+        .badges {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Progress bar */
+        .progress-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Comparison table */
+        .comparison {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .comparison-col {
+            padding: 30px;
+            border-radius: 16px;
+            min-width: 300px;
+        }
+
+        .comparison-col.bad {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .comparison-col.good {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .comparison-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .comparison-col.bad .comparison-title {
+            color: #ff6b6b;
+        }
+
+        .comparison-col.good .comparison-title {
+            color: #00ff88;
+        }
+
+        .comparison-item {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated background -->
+    <div class="bg-grid"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Slide 1: Title (5s) -->
+        <div class="slide active" id="slide1">
+            <div class="logo">Ephemera</div>
+            <div class="tagline">Zero-Trust SSH Authority</div>
+            <div class="version-badge">v3.1.0 • Production Ready • Open Source</div>
+        </div>
+
+        <!-- Slide 2: The Problem (5s) -->
+        <div class="slide" id="slide2">
+            <div class="feature-icon">🔓</div>
+            <div class="feature-title">The Problem</div>
+            <div class="problem-text">
+                SSH keys are <strong>forever</strong>.<br>
+                Once compromised, attackers have <strong>permanent access</strong>.<br>
+                No visibility. No audit trail. No revocation.
+            </div>
+        </div>
+
+        <!-- Slide 3: The Solution (5s) -->
+        <div class="slide" id="slide3">
+            <div class="feature-icon">✨</div>
+            <div class="feature-title">The Solution</div>
+            <div class="feature-subtitle">Short-Lived Certificates + MFA</div>
+            <div class="comparison">
+                <div class="comparison-col bad">
+                    <div class="comparison-title">❌ Traditional SSH</div>
+                    <div class="comparison-item">🔑 Static keys (years)</div>
+                    <div class="comparison-item">🤷 No MFA required</div>
+                    <div class="comparison-item">📭 No central audit</div>
+                    <div class="comparison-item">⚠️ Can't revoke</div>
+                </div>
+                <div class="comparison-col good">
+                    <div class="comparison-title">✅ Ephemera</div>
+                    <div class="comparison-item">⏱️ 5-minute certificates</div>
+                    <div class="comparison-item">👆 WebAuthn required</div>
+                    <div class="comparison-item">📜 Full audit trail</div>
+                    <div class="comparison-item">🔄 Instant revocation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: JIT Sudo (6s) -->
+        <div class="slide" id="slide4">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Just-in-Time Sudo</div>
+            <div class="feature-subtitle">No More sudo Passwords</div>
+            <div class="feature-description">
+                Every privilege escalation requires WebAuthn approval.<br>
+                Integrated via PAM — no SSH proxy, no MITM.
+            </div>
+            <div class="feature-points">
+                <div class="feature-point">
+                    <div class="point-icon">🔐</div>
+                    <div class="point-text">Password-less</div>
+                </div>
+                <div class="feature-point">
+                    <div class="point-icon">👆</div>
+                    <div class="point-text">Touch to Approve</div>
+                </div>
+                <div class="feature-point">
+                    <div class="point-icon">📜</div>
+                    <div class="point-text">Full Audit Trail</div>
+                </div>
+                <div class="feature-point">
+                    <div class="point-icon">⏱️</div>
+                    <div class="point-text">60s Timeout</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Policy Engine (6s) -->
+        <div class="slide" id="slide5">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Policy Engine</div>
+            <div class="feature-subtitle">RBAC via Declarative YAML</div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                </div>
+                <div class="terminal-line"><span class="output"># Match on OIDC, IP, time, user</span></div>
+                <div class="terminal-line"><span class="command">match:</span></div>
+                <div class="terminal-line"><span class="command"> oidc_groups: ["sre-team"]</span></div>
+                <div class="terminal-line"><span class="command"> source_ip: "10.0.0.0/8"</span></div>
+                <div class="terminal-line"><span class="command"> hours: ["09:00-18:00"]</span></div>
+                <div class="terminal-line"><span class="success">principals: ["root", "admin"]</span></div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Disaster Recovery (6s) -->
+        <div class="slide" id="slide6">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-title">Sovereign Recovery</div>
+            <div class="feature-subtitle">Shamir Secret Sharing • No Cloud Required</div>
+            <div class="feature-description">
+                CA keys encrypted with AES-256-GCM.<br>
+                Password split into K-of-N shards. Air-gap compatible.
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                </div>
+                <div class="terminal-line"><span class="prompt">$</span> <span class="command">ephemera backup-create
+                        --k 3 --n 5</span></div>
+                <div class="terminal-line"><span class="success">✓ Backup encrypted</span></div>
+                <div class="terminal-line"><span class="success">✓ 5 shards generated (3 required)</span></div>
+                <div class="terminal-line"><span class="warning">⚠ Distribute shards to separate custodians</span></div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Key Rotation (6s) -->
+        <div class="slide" id="slide7">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Zero-Downtime Rotation</div>
+            <div class="feature-subtitle">Multi-CA Trust Model</div>
+            <div class="feature-description">
+                Rotate CA keys without dropping connections.<br>
+                Old keys stay trusted during transition.
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                </div>
+                <div class="terminal-line"><span class="prompt">$</span> <span class="command">ephemera rotate-ca</span>
+                </div>
+                <div class="terminal-line"><span class="output">Generating next key...</span></div>
+                <div class="terminal-line"><span class="output">Propagating to 47 servers...</span></div>
+                <div class="terminal-line"><span class="success">✓ CA key rotated successfully</span></div>
+                <div class="terminal-line"><span class="success">✓ Zero connections dropped</span></div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Audit Logging (5s) -->
+        <div class="slide" id="slide8">
+            <div class="feature-icon">📜</div>
+            <div class="feature-title">Tamper-Evident Audit</div>
+            <div class="feature-subtitle">Merkle-Chained • Remote Syslog</div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Actions Logged</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Tampering Possible</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Retention</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Final CTA (6s) -->
+        <div class="slide" id="slide9">
+            <div class="cta-box">
+                <div class="cta-title">SSH Without Static Keys</div>
+                <div class="cta-url">github.com/Qarait/ephemera</div>
+                <div class="badges">
+                    <div class="badge">🔒 No Cloud</div>
+                    <div class="badge">🚫 No MITM</div>
+                    <div class="badge">✓ Native OpenSSH</div>
+                    <div class="badge">🏠 Air-Gap Ready</div>
+                </div>
+            </div>
+            <div style="margin-top: 50px; font-size: 22px; color: rgba(255,255,255,0.5);">
+                Apache 2.0 Licensed • Open Source • Production Ready
+            </div>
+        </div>
+
+        <!-- Progress dots -->
+        <div class="progress-container">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Slide system
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.progress-dot');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        // Timing for each slide in milliseconds (~45 seconds total)
+        const slideDurations = [5000, 5000, 5000, 6000, 6000, 6000, 6000, 5000, 6000];
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('active');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+                setTimeout(nextSlide, slideDurations[currentSlide]);
+            }
+        }
+
+        // Start the animation after 500ms
+        setTimeout(() => {
+            setTimeout(nextSlide, slideDurations[0]);
+        }, 500);
+    </script>
+</body>
+
+</html>

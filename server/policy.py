@@ -129,13 +129,20 @@ class PolicyEngine:
                     matched = False
 
             if matched:
-                return {
+                result = {
                     "name": rule.get("name", "Unknown"),
                     "principals": rule.get("principals", []),
                     "max_duration": rule.get("max_duration", "15m")
                 }
+                # Trust Budget (Experimental, Opt-in)
+                # Only included if explicitly defined in the policy rule.
+                # Absence means the feature is disabled for this rule.
+                if "trust_budget" in rule:
+                    result["trust_budget"] = rule["trust_budget"]
+                return result
 
         # No match found, return default
+        # Trust budgeting is NOT applied to the default policy.
         return {
             "name": "Default",
             "principals": self.default.get("principals", []),

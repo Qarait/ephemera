@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0] – 2026-01-01
+
+### Added
+- **Experimental: Trust Budgeting (Opt-in)**: Added an opt-in governance primitive for limiting cumulative privileged authority at certificate issuance time. See [docs/trust_budgeting.md](docs/trust_budgeting.md).
+
+### Notes
+- Trust Budgeting is experimental and may change or be removed.
+- Disabled by default; must be explicitly enabled in policy.yaml.
+
+---
+
 ## [3.1.0] – 2025-12-16
 
 ### Added

@@ -34,6 +34,7 @@ from .renewal import renewal_bp
 from .config_auth import AUTH_MODE, AuthMode, validate_auth_config
 from .auth_oidc import oidc_bp, init_oidc
 from .policy import PolicyEngine, parse_duration
+from .trust_budget import TrustBudgetLedger
 
 app = Flask(__name__, static_folder=PUBLIC_DIR)
 # Trust X-Forwarded-For headers from the Docker gateway/proxy
@@ -46,6 +47,12 @@ app.register_blueprint(renewal_bp)
 # Initialize Policy Engine
 POLICY_FILE = os.path.join(BASE_DIR, '..', 'policy.yaml') # Assuming policy.yaml is in root
 policy_engine = PolicyEngine(POLICY_FILE)
+
+# Initialize Trust Budget Ledger (Experimental, Opt-in)
+# This is a governance primitive for issuance-time accounting.
+# Disabled by default unless explicitly configured in policy.
+TRUST_BUDGET_DB = os.path.join(DATA_DIR, 'trust_budget.db')
+trust_budget_ledger = TrustBudgetLedger(TRUST_BUDGET_DB)
 
 # Initialize OIDC if enabled
 # Initialize OIDC if enabled
@@ -798,6 +805,43 @@ def request_cert():
             return jsonify({
                 "error": f"Requested duration ({validity_minutes}m) exceeds policy limit ({max_duration_minutes}m) for role '{policy_result['name']}'"
             }), 403
+        
+        # Trust Budget Check (Experimental, Opt-in)
+        # Only applied if the matched policy explicitly defines a trust_budget.
+        trust_budget_receipt = None
+        if 'trust_budget' in policy_result:
+            tb_config = policy_result['trust_budget']
+            budget_id = tb_config.get('budget_id', f"user:{username}")
+            cost = tb_config.get('cost', 1)
+            initial_balance = tb_config.get('initial_balance', 100)
+            reset_hours = tb_config.get('reset_interval_hours')
+            
+            # Ensure budget exists
+            trust_budget_ledger.get_or_create_budget(budget_id, initial_balance, reset_hours)
+            
+            # Check and deduct
+            success, remaining, error_msg = trust_budget_ledger.check_and_deduct(
+                budget_id, cost, username, request_id=None  # request_id assigned after issuance
+            )
+            
+            if not success:
+                append_audit_log({
+                    "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+                    "event": "trust_budget_exhausted",
+                    "username": username,
+                    "budget_id": budget_id,
+                    "cost": cost,
+                    "remaining": remaining
+                })
+                return jsonify({"error": error_msg}), 403
+            
+            trust_budget_receipt = {
+                "budget_id": budget_id,
+                "cost": cost,
+                "remaining": remaining,
+                "experimental": True,
+                "disclaimer": "Experimental. Opt-in. Governance primitive. May change or be removed."
+            }
             
         cert_content, request_id = issue_ssh_cert(username, public_key, validity_minutes, principals)
 
@@ -816,7 +860,11 @@ def request_cert():
         }
         append_audit_log(entry)
 
-        return jsonify({"certificate": cert_content})
+        response_data = {"certificate": cert_content}
+        if trust_budget_receipt:
+            response_data["trust_budget"] = trust_budget_receipt
+        
+        return jsonify(response_data)
 
     except Exception as e:
         print(f"Cert generation error: {e}")

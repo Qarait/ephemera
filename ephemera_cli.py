@@ -102,7 +102,8 @@ def get_cert(args):
     })
     
     if res.status_code == 200:
-        cert = res.json().get('certificate')
+        response_data = res.json()
+        cert = response_data.get('certificate')
         with open(f"{KEY_NAME}-cert.pub", 'w') as f:
             f.write(cert)
         print(f"Certificate saved to {KEY_NAME}-cert.pub")
@@ -110,6 +111,16 @@ def get_cert(args):
         # Inspect cert to show principals
         print("\nCertificate Details:")
         subprocess.call(['ssh-keygen', '-L', '-f', f"{KEY_NAME}-cert.pub"])
+        
+        # Trust Budget Receipt (Experimental, Opt-in)
+        if 'trust_budget' in response_data:
+            tb = response_data['trust_budget']
+            print("\n--- Trust Budget Receipt ---")
+            print(f"Budget ID: {tb.get('budget_id')}")
+            print(f"Cost: {tb.get('cost')} points")
+            print(f"Remaining: {tb.get('remaining')} points")
+            print(f"[{tb.get('disclaimer')}]")
+            print("----------------------------")
     else:
         print(f"Certificate request failed: {res.text}")
 
