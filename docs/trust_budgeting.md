@@ -23,6 +23,16 @@ Trust Budgeting addresses these gaps by tracking issuance costs against a finite
 3. **Exhaustion Handling**: When the budget is exhausted, certificate issuance fails with a clear message.
 4. **Reset Cycle**: Budgets can be configured to reset at a fixed interval (e.g., every 24 hours).
 
+### Issuance Flow
+
+![Trust Budget Flow](../assets/diagrams/trust_budget_flow.png)
+
+The diagram above shows the issuance-time decision flow:
+- If no trust budget is defined in the policy, normal issuance proceeds.
+- If a budget is defined, the ledger is consulted atomically.
+- Sufficient balance results in cost deduction and certificate issuance.
+- Insufficient balance results in a clear denial message.
+
 ## Configuration
 
 Trust Budgeting is configured in `policy.yaml` at the rule level:
