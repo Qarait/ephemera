@@ -70,6 +70,17 @@
                 <li><strong>Trust Budgeting</strong>: Experimental, opt-in, may change or be removed</li>
             </ul>
 
+            <h2>Architecture</h2>
+            <pre
+                style="background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+User + WebAuthn
+    → Ephemera CA (policy, signing, ledger)
+        → SSH servers (TrustedUserCAKeys)
+        → Audit log (tamper-evident chain)
+            </pre>
+            <p><a href="architecture.html" style="color: var(--accent); text-decoration: underline;">Full architecture
+                    documentation →</a></p>
+
             <div class="flow">
                 <span>User</span>
                 <span class="flow-arrow">→</span>
