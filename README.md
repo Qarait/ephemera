@@ -15,6 +15,10 @@
 
 ![Architecture Diagram](assets/diagrams/ephemera_v2_architecture.png)
 
+## Why Ephemera?
+
+Traditional SSH relies on long-lived private keys spread across laptops and servers. Once a key leaks, access persists until you discover it and rotate keys everywhere. Ephemera replaces static keys with short-lived certificates that expire automatically, shrinking the window of misuse from months to minutes.
+
 ## Positioning
 
 ### Best For
