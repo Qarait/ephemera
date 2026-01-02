@@ -86,6 +86,7 @@
             <ul>
                 <li><strong>Zero-Trust</strong> — No permanent SSH keys. Certificates expire in minutes.</li>
                 <li><strong>WebAuthn MFA</strong> — Phishing-resistant authentication via hardware keys or biometrics.
+                    (<a href="webauthn.html" style="color: var(--accent); text-decoration: underline;">Setup guide</a>)
                 </li>
                 <li><strong>JIT Sudo</strong> — Privilege escalation requires fresh MFA approval, logged centrally.</li>
                 <li><strong>Tamper-Evident Audit</strong> — Merkle-chained ledger. History cannot be rewritten without
@@ -93,20 +94,6 @@
                 <li><strong>Sovereign Recovery</strong> — Shamir secret sharing for encrypted backups. No cloud
                     dependency.</li>
             </ul>
-
-            <div class="note">
-                <div class="note-title">YubiKey / WebAuthn Setup</div>
-                <p><em>Ephemera uses WebAuthn-compatible hardware keys (such as YubiKey) to enforce physical presence
-                        for
-                        SSH certificate issuance and sudo approval. Learn more in our <a href="webauthn.html"
-                            style="color: var(--accent); text-decoration: underline;">WebAuthn Guide</a>.</em></p>
-                <ol>
-                    <li>Run <code>ephemera login</code></li>
-                    <li>When prompted, insert and touch your YubiKey</li>
-                    <li>The credential is registered and bound to your account</li>
-                    <li>Future SSH renewals and sudo approvals require physical presence</li>
-                </ol>
-            </div>
 
             <h2>Experimental: Trust Budgeting (Opt-in)</h2>
             <p>
