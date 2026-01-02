@@ -56,6 +56,14 @@
                 keys on user devices. Certificates are issued just-in-time and expire automatically.
             </p>
 
+            <h2>Why Ephemera?</h2>
+            <p>
+                Traditional SSH relies on long-lived private keys spread across laptops and servers.
+                Once a key leaks, access persists until you discover it and rotate keys everywhere.
+                Ephemera replaces static keys with short-lived certificates that expire automatically,
+                shrinking the window of misuse from months to minutes.
+            </p>
+
             <div class="flow">
                 <span>User</span>
                 <span class="flow-arrow">→</span>
