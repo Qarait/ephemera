@@ -158,12 +158,15 @@ p {
 }
 
 a {
-  color: var(--accent);
-  text-decoration: none;
+  color: #5cb3ff;
+  text-decoration: underline;
+  text-decoration-color: #5cb3ff40;
 }
 
 a:hover {
+  color: #7fc4ff;
   text-decoration: underline;
+  text-decoration-color: #7fc4ff;
 }
 
 /* Code blocks */
