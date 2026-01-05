@@ -24,6 +24,14 @@ with explicit physical presence and auditable privilege escalation.
 It is designed for teams that want centralized SSH governance without
 MITM proxies, custom protocols, or cloud dependencies.
 
+## What Ephemera Is Not
+
+- Not an SSH proxy or MITM gateway
+- Not a PAM replacement
+- Not a runtime monitoring or behavior analysis tool
+- Not a cloud service
+- Not a SIEM or detection platform
+
 ## Why Ephemera?
 
 Traditional SSH relies on long-lived private keys spread across laptops and servers. Once a key leaks, access persists until you discover it and rotate keys everywhere. Ephemera replaces static keys with short-lived certificates that expire automatically, shrinking the window of misuse from months to minutes.
