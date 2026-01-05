@@ -164,7 +164,9 @@ class TrustBudgetLedger:
         cursor = conn.cursor()
         
         try:
-            # Begin exclusive transaction for atomicity
+            # EXCLUSIVE lock prevents concurrent deductions from the same budget.
+            # Without this, two simultaneous requests could both see sufficient balance
+            # and over-deduct, violating the budget invariant.
             cursor.execute('BEGIN EXCLUSIVE')
             
             cursor.execute('SELECT * FROM budgets WHERE budget_id = ?', (budget_id,))
@@ -177,7 +179,9 @@ class TrustBudgetLedger:
             budget = dict(row)
             current_balance = budget['current_balance']
             
-            # Check for reset
+            # Resets prevent permanent budget exhaustion.
+            # Without periodic resets, a user who depletes their budget would be
+            # locked out indefinitely, defeating the governance intent.
             next_reset_str = None
             if budget['reset_interval_hours'] and budget['last_reset_at']:
                 last_reset = datetime.fromisoformat(budget['last_reset_at'])
@@ -185,7 +189,8 @@ class TrustBudgetLedger:
                 next_reset_str = next_reset.isoformat()
                 
                 if datetime.utcnow() >= next_reset:
-                    # Perform reset
+                    # Reset happens inside the same transaction as deduction.
+                    # This guarantees the user sees the reset before rejection.
                     current_balance = budget['initial_balance']
                     cursor.execute('''
                         UPDATE budgets 
@@ -193,7 +198,8 @@ class TrustBudgetLedger:
                         WHERE budget_id = ?
                     ''', (current_balance, datetime.utcnow().isoformat(), budget_id))
             
-            # Check if sufficient balance
+            # Rejection is the core governance mechanism.
+            # A calm, informational message avoids escalation and provides actionable context.
             if current_balance < cost:
                 conn.rollback()
                 reset_info = f" Budget resets at {next_reset_str}." if next_reset_str else ""
@@ -203,13 +209,15 @@ class TrustBudgetLedger:
                     f"Trust budget exhausted. This request requires {cost} points; {current_balance} remain.{reset_info}"
                 )
             
-            # Deduct cost
+            # Deduction and logging happen in the same atomic transaction.
+            # If either fails, both are rolled back — no partial state.
             new_balance = current_balance - cost
             cursor.execute('''
                 UPDATE budgets SET current_balance = ? WHERE budget_id = ?
             ''', (new_balance, budget_id))
             
-            # Log transaction
+            # Transaction log exists for audit, not enforcement.
+            # Even if logging fails, the budget state remains consistent.
             cursor.execute('''
                 INSERT INTO transactions (budget_id, username, cost, balance_before, balance_after, timestamp, request_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
