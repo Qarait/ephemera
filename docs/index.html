@@ -56,6 +56,26 @@
                 keys on user devices. Certificates are issued just-in-time and expire automatically.
             </p>
 
+            <h2>What Ephemera Is</h2>
+            <p>
+                Ephemera is a self-hosted SSH Certificate Authority built on native OpenSSH features.
+                It replaces long-lived SSH keys with short-lived certificates issued just-in-time,
+                with explicit physical presence and auditable privilege escalation.
+            </p>
+            <p>
+                It is designed for teams that want centralized SSH governance without
+                MITM proxies, custom protocols, or cloud dependencies.
+            </p>
+
+            <h2>What Ephemera Is Not</h2>
+            <ul>
+                <li>Not an SSH proxy or MITM gateway</li>
+                <li>Not a PAM replacement</li>
+                <li>Not a runtime monitoring or behavior analysis tool</li>
+                <li>Not a cloud service</li>
+                <li>Not a SIEM or detection platform</li>
+            </ul>
+
             <h2>Why Ephemera?</h2>
             <p>
                 Traditional SSH relies on long-lived private keys spread across laptops and servers.
