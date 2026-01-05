@@ -32,6 +32,13 @@ MITM proxies, custom protocols, or cloud dependencies.
 - Not a cloud service
 - Not a SIEM or detection platform
 
+## Project Status
+
+Core SSH CA functionality: **Production-ready**  
+Trust Budgeting: **Experimental (opt-in, subject to change)**
+
+The experimental features are clearly isolated and disabled by default.
+
 ## Why Ephemera?
 
 Traditional SSH relies on long-lived private keys spread across laptops and servers. Once a key leaks, access persists until you discover it and rotate keys everywhere. Ephemera replaces static keys with short-lived certificates that expire automatically, shrinking the window of misuse from months to minutes.
