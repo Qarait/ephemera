@@ -1,6 +1,7 @@
 # Ephemera — Zero-Trust SSH Certificate Authority
 
 [![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
 ![Release](https://img.shields.io/github/v/release/ephemerassh/ephemera)
 ![License](https://img.shields.io/github/license/ephemerassh/ephemera)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey)
