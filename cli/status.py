@@ -55,7 +55,7 @@ def print_status(args):
             res = s.get(f"{BASE_URL}/api/me")
             if res.status_code == 200:
                 user_info = res.json()
-        except:
+        except requests.RequestException:
             pass
 
     if user_info:
@@ -203,7 +203,7 @@ def print_status(args):
                             else:
                                 time_str = f"{int(remaining)}s"
                             expires_display = colorize(f"(expires in {time_str})", Colors.YELLOW)
-                        except:
+                        except (ValueError, KeyError):
                             expires_display = ""
                         print(f"    • {req['id'][:8]}... → {req['server']} {expires_display}")
                 else:

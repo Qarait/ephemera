@@ -116,10 +116,10 @@ class RevocationManager:
         finally:
             if temp_key_path and os.path.exists(temp_key_path):
                 try: os.remove(temp_key_path)
-                except: pass
+                except OSError: pass
             if temp_pub_path and os.path.exists(temp_pub_path):
                 try: os.remove(temp_pub_path)
-                except: pass
+                except OSError: pass
 
     def get_krl_path(self):
         return KRL_FILE

@@ -25,5 +25,5 @@ def load_session():
     try:
         with open(SESSION_FILE, 'r') as f:
             return json.load(f)
-    except:
+    except (json.JSONDecodeError, IOError):
         return None

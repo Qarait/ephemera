@@ -163,5 +163,5 @@ def parse_duration(duration_str):
             return max(1, int(duration_str[:-1]) // 60) # Minimum 1 minute
         else:
             return int(duration_str) # Assume minutes
-    except:
+    except ValueError:
         return 15

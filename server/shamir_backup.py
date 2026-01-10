@@ -234,7 +234,7 @@ def restore_ca_key(shard_paths: list, output_path: Path):
     # Set permissions (0600)
     try:
         os.chmod(output_path, 0o600)
-    except:
+    except OSError:
         pass
         
     return True

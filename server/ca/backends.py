@@ -118,7 +118,7 @@ class SoftHsmCA(BaseCA):
         if self.temp_pub_key_path and os.path.exists(self.temp_pub_key_path):
             try:
                 os.remove(self.temp_pub_key_path)
-            except:
+            except OSError:
                 pass
 
     def issue_user_cert(self, user_pubkey_path, principals, valid_for_seconds):

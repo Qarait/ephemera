@@ -104,7 +104,7 @@ def initialize():
         try:
             with open(USERS_FILE, 'r') as f:
                 users = json.load(f)
-        except:
+        except (json.JSONDecodeError, IOError):
             users = []
     
     # Create admin if missing
@@ -1077,7 +1077,7 @@ def policy_dryrun():
     if "current_time" in data:
         try:
             context["current_time"] = datetime.datetime.fromisoformat(data["current_time"])
-        except:
+        except ValueError:
             pass
             
     result = policy_engine.evaluate(context)

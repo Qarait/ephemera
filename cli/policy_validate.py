@@ -18,7 +18,7 @@ def parse_duration(duration_str):
             return max(1, int(duration_str[:-1]) // 60)
         else:
             return int(duration_str)
-    except:
+    except ValueError:
         return None
 
 def validate_cidr(cidr):

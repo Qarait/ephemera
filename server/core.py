@@ -113,7 +113,7 @@ def append_audit_log(entry):
                             last_entry = json.loads(line)
                             prev_hash = last_entry.get('hash', "0" * 64)
                             break
-                        except:
+                        except json.JSONDecodeError:
                             pass
         except Exception as e:
             print(f"Error reading audit log for chaining: {e}")
@@ -149,7 +149,7 @@ def verify_audit_chain():
             
             try:
                 entry = json.loads(line)
-            except:
+            except json.JSONDecodeError:
                 errors.append(f"Line {i+1}: Invalid JSON")
                 continue
                 
