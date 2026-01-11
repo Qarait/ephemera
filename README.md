@@ -1,5 +1,6 @@
 # Ephemera — Zero-Trust SSH Certificate Authority
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/356eca22d37b4e588a8e63c6191fdfd2)](https://app.codacy.com/gh/Qarait/ephemera?utm_source=github.com&utm_medium=referral&utm_content=Qarait/ephemera&utm_campaign=Badge_Grade)
 [![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
 ![Release](https://img.shields.io/github/v/release/ephemerassh/ephemera)
