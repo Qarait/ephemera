@@ -198,7 +198,17 @@ def restore_backup(backup_file: Path, shard_paths: list, output_dir: Path):
         f.write(plaintext)
         
     with tarfile.open(tar_path, "r:gz") as tar:
-        tar.extractall(path=output_dir)
+        # Security: Filter out dangerous members (path traversal, absolute paths)
+        safe_members = []
+        for member in tar.getmembers():
+            # Reject absolute paths
+            if member.name.startswith('/') or member.name.startswith('\\'):
+                continue
+            # Reject path traversal
+            if '..' in member.name:
+                continue
+            safe_members.append(member)
+        tar.extractall(path=output_dir, members=safe_members)
         
     tar_path.unlink()
     return True
