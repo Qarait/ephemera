@@ -3,7 +3,6 @@ from webauthn import generate_authentication_options, verify_authentication_resp
 from webauthn.helpers import base64url_to_bytes, options_to_json
 from webauthn.helpers.structs import UserVerificationRequirement
 import datetime
-import os
 import base64
 
 from .core import (

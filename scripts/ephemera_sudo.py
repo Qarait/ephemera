@@ -62,10 +62,10 @@ def main():
         sys.exit(1)
     
     # 2. Display approval URL
-    print(f"\n[Ephemera] SUDO Request Initiated")
+    print("\n[Ephemera] SUDO Request Initiated")
     print(f"[Ephemera] Request ID: {request_id}")
     print(f"[Ephemera] Approve at: {approval_url}")
-    print(f"[Ephemera] Waiting for WebAuthn approval...")
+    print("[Ephemera] Waiting for WebAuthn approval...")
     
     # 3. Poll for approval
     elapsed = 0

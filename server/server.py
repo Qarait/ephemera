@@ -8,7 +8,7 @@ import secrets
 import base64
 import io
 import tempfile
-from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
+from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 from authlib.integrations.flask_client import OAuth
@@ -216,7 +216,7 @@ def signup():
     print(f"--- EMAIL VERIFICATION ---")
     print(f"To: {username}")
     print(f"Link: http://localhost:3000/verify-email.html?token={verification_token}")
-    print(f"--------------------------")
+    print("--------------------------")
     
     return jsonify({
         "message": "Signup successful. Please check your email to verify your account.",
@@ -541,7 +541,7 @@ def sudo_init():
     # Policy Engine Check: Is this user allowed to sudo?
     sudo_policy = policy_engine.config.get('sudo', {})
     allowed_users = sudo_policy.get('allowed_users', [])
-    allowed_groups = sudo_policy.get('allowed_groups', [])
+    # Note: allowed_groups support planned for OIDC integration
     
     # Check if user is in allowed_users or belongs to allowed_groups
     user_allowed = username in allowed_users
