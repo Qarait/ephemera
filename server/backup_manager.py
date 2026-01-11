@@ -4,7 +4,6 @@ import hashlib
 import shutil
 import secrets
 import tarfile
-import struct
 from pathlib import Path
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 

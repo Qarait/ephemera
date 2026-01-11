@@ -154,7 +154,7 @@ class SoftHsmCA(BaseCA):
         ]
         
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, env=env, check=True)
+            subprocess.run(cmd, capture_output=True, text=True, env=env, check=True)
         except subprocess.CalledProcessError as e:
             logger.error(f"SoftHSM signing failed: {e.stderr}")
             if askpass_path and os.path.exists(askpass_path):

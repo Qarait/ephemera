@@ -1,6 +1,5 @@
 import os
 import json
-import requests
 
 BASE_URL = "http://localhost:3000"
 # Use ~/.ssh/ephemera to match init.py structure

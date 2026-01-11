@@ -1,7 +1,6 @@
 import yaml
 import fnmatch
 import os
-import logging
 import ipaddress
 from datetime import datetime
 

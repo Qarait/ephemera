@@ -19,7 +19,7 @@ pyotp==2.9.0
 qrcode==8.2
 requests==2.32.5
 typing_extensions==4.15.0
-urllib3==2.6.0
+urllib3==2.6.3
 webauthn==2.7.0
 Werkzeug==3.1.4
 PyYAML

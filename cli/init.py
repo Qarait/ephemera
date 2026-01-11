@@ -1,5 +1,4 @@
 import platform
-import shutil
 from pathlib import Path
 
 def get_ssh_paths():
