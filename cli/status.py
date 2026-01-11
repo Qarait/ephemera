@@ -84,9 +84,6 @@ def print_status(args):
             # Parse ssh-keygen -L output
             output = subprocess.check_output(['ssh-keygen', '-L', '-f', cert_path], text=True)
             
-            valid_from = None
-            valid_to = None
-            
             for line in output.splitlines():
                 line = line.strip()
                 if line.startswith("Valid:"):

@@ -338,7 +338,6 @@ def handle_next_key(args):
 def handle_sudo_approve(args):
     """Approve a pending sudo request via WebAuthn."""
     ensure_logged_in()
-    session_data = load_session()
     
     request_id = args.request_id
     

@@ -121,7 +121,7 @@ def initialize():
         
         print("\n" + "="*60)
         print("[IMPORTANT] Admin user created.")
-        print(f"Username: admin")
+        print("Username: admin")
         print(f"Password: {initial_password}")
         print("Please save this password immediately. It will not be shown again.")
         print("="*60 + "\n")

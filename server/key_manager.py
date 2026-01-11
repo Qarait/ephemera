@@ -4,7 +4,7 @@ import shutil
 import logging
 import datetime
 import subprocess
-from server.crypto import encrypt_ca_key, decrypt_ca_key
+from server.crypto import encrypt_ca_key
 
 logger = logging.getLogger(__name__)
 
