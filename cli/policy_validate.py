@@ -1,7 +1,6 @@
 import yaml
 import ipaddress
 import os
-import sys
 from datetime import datetime
 
 def parse_duration(duration_str):

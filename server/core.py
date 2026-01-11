@@ -1,13 +1,11 @@
 import os
 import json
 import datetime
-import base64
 import logging
 from logging.handlers import SysLogHandler
 import hashlib
 import uuid
 from collections import defaultdict
-from cryptography.fernet import Fernet
 
 from server.crypto import derive_key_from_password, encrypt_ca_key, decrypt_ca_key
 from server.hsm.softhsm import validate_softhsm_boot
