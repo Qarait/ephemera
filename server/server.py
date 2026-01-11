@@ -3,7 +3,6 @@ import json
 import subprocess
 import uuid
 import datetime
-import time
 import secrets
 import base64
 import io
@@ -11,7 +10,6 @@ import tempfile
 from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
-from authlib.integrations.flask_client import OAuth
 import pyotp
 import qrcode
 from webauthn import generate_registration_options, verify_registration_response, generate_authentication_options, verify_authentication_response
@@ -26,7 +24,7 @@ from .core import (
     get_users, get_audit_log, append_audit_log, verify_audit_chain,
     check_rate_limit, record_attempt, record_login_failure, clear_login_failures,
     derive_key_from_password, issue_ssh_cert,
-    key_manager, CA, CA_MASTER_PASSWORD # Import key_manager and CA for rotation
+    key_manager, CA # Import key_manager and CA for rotation
 )
 from .webauthn_utils import save_challenge, get_challenge, delete_challenge
 from .renewal import renewal_bp

@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

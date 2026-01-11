@@ -3,7 +3,6 @@ import sys
 import subprocess
 import requests
 import datetime
-from pathlib import Path
 from .common import BASE_URL, KEY_NAME, load_session
 from .init import get_ssh_paths
 
