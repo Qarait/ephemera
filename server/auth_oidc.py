@@ -1,7 +1,6 @@
 from flask import Blueprint, url_for, session, redirect, current_app, jsonify
 from authlib.integrations.flask_client import OAuth
 import json
-import os
 from server.config_auth import AUTH_MODE, AuthMode, OIDC_ISSUER_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_SCOPES
 from server.core import get_users, USERS_FILE
 

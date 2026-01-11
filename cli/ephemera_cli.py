@@ -381,7 +381,7 @@ def main():
     dryrun_parser.add_argument('--ip', default='127.0.0.1', help='Source IP to test')
     dryrun_parser.add_argument('--time', help='Time to test (ISO format)')
 
-    parser_policy_reload = subparsers.add_parser('policy-reload', help='Reload policy from disk (Admin only)')
+    subparsers.add_parser('policy-reload', help='Reload policy from disk (Admin only)')
     
     # Server Setup Command
     parser_server_setup = subparsers.add_parser('server-setup', help='Generate server bootstrap script')

@@ -82,10 +82,6 @@ class FileCA(BaseCA):
             if signing_key_path == temp_ca_path and os.path.exists(temp_ca_path):
                 os.remove(temp_ca_path)
 
-        # Read the generated certificate
-            
-        # Read the generated certificate
-        cert_path = f"{user_pubkey_path}-cert.pub"
 from server.hsm.pkcs11_utils import get_public_key_from_hsm
 
 class SoftHsmCA(BaseCA):

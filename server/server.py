@@ -7,7 +7,6 @@ import time
 import secrets
 import base64
 import io
-import logging
 import tempfile
 from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
