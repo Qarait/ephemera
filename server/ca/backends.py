@@ -72,7 +72,7 @@ class FileCA(BaseCA):
                 user_pubkey_path
             ]
             
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
             
         except subprocess.CalledProcessError as e:
             logger.error(f"ssh-keygen failed: {e.stderr}")

@@ -1,4 +1,3 @@
-import textwrap
 
 def generate_setup_script(ca_pub_key):
     """

@@ -3,7 +3,6 @@ import json
 import hashlib
 import shutil
 import secrets
-import functools
 from pathlib import Path
 
 # --- Shamir Secret Sharing Implementation ---
