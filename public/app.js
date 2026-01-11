@@ -222,17 +222,46 @@ async function loadAudit() {
         const res = await fetch('/api/audit');
         const logs = await res.json();
 
-        tbody.innerHTML = logs.map(log => `
-            <tr>
-                <td>${log.username}</td>
-                <td>${new Date(log.issuedAt).toLocaleString()}</td>
-                <td>${new Date(log.expiresAt).toLocaleString()}</td>
-                <td>${log.validityMinutes}m</td>
-                <td style="font-family: monospace; font-size: 0.8em">${log.id.substring(0, 8)}...</td>
-            </tr>
-        `).join('');
+        // Clear existing rows safely
+        tbody.textContent = '';
+
+        // Build rows using safe DOM methods to prevent XSS
+        logs.forEach(log => {
+            const tr = document.createElement('tr');
+
+            const tdUsername = document.createElement('td');
+            tdUsername.textContent = log.username;
+            tr.appendChild(tdUsername);
+
+            const tdIssued = document.createElement('td');
+            tdIssued.textContent = new Date(log.issuedAt).toLocaleString();
+            tr.appendChild(tdIssued);
+
+            const tdExpires = document.createElement('td');
+            tdExpires.textContent = new Date(log.expiresAt).toLocaleString();
+            tr.appendChild(tdExpires);
+
+            const tdValidity = document.createElement('td');
+            tdValidity.textContent = log.validityMinutes + 'm';
+            tr.appendChild(tdValidity);
+
+            const tdId = document.createElement('td');
+            tdId.style.fontFamily = 'monospace';
+            tdId.style.fontSize = '0.8em';
+            tdId.textContent = log.id.substring(0, 8) + '...';
+            tr.appendChild(tdId);
+
+            tbody.appendChild(tr);
+        });
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5">Failed to load logs</td></tr>';
+        // Error row also uses safe DOM methods
+        tbody.textContent = '';
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.textContent = 'Failed to load logs';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
     }
 }
 

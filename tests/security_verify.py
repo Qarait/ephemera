@@ -3,7 +3,6 @@ import sys
 import os
 import json
 import datetime
-import shelve
 from unittest.mock import patch, MagicMock
 
 # Add project root to path
@@ -17,30 +16,29 @@ class SecurityTests(unittest.TestCase):
     def setUp(self):
         self.app = Flask(__name__)
         self.app.register_blueprint(renewal_bp)
-        self.app.secret_key = 'test_secret'
+        # Use environment variable for secret key instead of hardcoded value
+        self.app.secret_key = os.environ.get('TEST_SECRET_KEY', os.urandom(32).hex())
         self.client = self.app.test_client()
         
-        # Clear challenge store
-        if os.path.exists(webauthn_utils.CHALLENGE_STORE + '.dat'):
-            os.remove(webauthn_utils.CHALLENGE_STORE + '.dat')
-        if os.path.exists(webauthn_utils.CHALLENGE_STORE + '.bak'):
-            os.remove(webauthn_utils.CHALLENGE_STORE + '.bak')
-        if os.path.exists(webauthn_utils.CHALLENGE_STORE + '.dir'):
-            os.remove(webauthn_utils.CHALLENGE_STORE + '.dir')
+        # Clear challenge store (now uses JSON file)
+        if os.path.exists(webauthn_utils.CHALLENGE_STORE):
+            os.remove(webauthn_utils.CHALLENGE_STORE)
 
     def test_challenge_expiration(self):
         """Test that expired challenges are rejected"""
         username = 'testuser'
-        challenge = b'test_challenge'
+        challenge = 'test_challenge'
         
         # Save challenge
         webauthn_utils.save_challenge(username, challenge)
         
         # Manually modify the timestamp to be 5 minutes ago
-        with shelve.open(webauthn_utils.CHALLENGE_STORE) as db:
-            data = db[username]
-            data['timestamp'] = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
-            db[username] = data
+        # Now uses JSON file instead of shelve
+        data = webauthn_utils._load_challenges()
+        data[username]['timestamp'] = (
+            datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        ).isoformat()
+        webauthn_utils._save_challenges(data)
             
         # Try to get challenge
         retrieved = webauthn_utils.get_challenge(username)
@@ -49,7 +47,7 @@ class SecurityTests(unittest.TestCase):
     def test_replay_attack(self):
         """Test that a challenge cannot be used twice"""
         username = 'testuser'
-        challenge = b'test_challenge'
+        challenge = 'test_challenge'
         
         # Save challenge
         webauthn_utils.save_challenge(username, challenge)
@@ -85,7 +83,7 @@ class SecurityTests(unittest.TestCase):
         mock_get_users.return_value = [mock_user]
         
         # Save challenge
-        webauthn_utils.save_challenge(username, b'challenge')
+        webauthn_utils.save_challenge(username, 'challenge')
         
         with self.client.session_transaction() as sess:
             sess['username'] = username

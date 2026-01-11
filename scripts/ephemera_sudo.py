@@ -14,6 +14,25 @@ EPHEMERA_SERVER = os.environ.get('EPHEMERA_SERVER', 'http://ephemera:3000')
 POLL_INTERVAL = 2
 TIMEOUT = 60  # seconds
 
+# Security: Enforce HTTPS or localhost-only connections
+# Prevents credentials from being sent in plaintext over the network
+def _validate_server_url(url):
+    """Ensure server URL uses HTTPS or is localhost (for dev)."""
+    if url.startswith('https://'):
+        return True
+    if url.startswith('http://localhost') or url.startswith('http://127.0.0.1'):
+        return True
+    if url.startswith('http://ephemera:'):
+        # Allow Docker internal network (ephemera service name)
+        return True
+    return False
+
+if not _validate_server_url(EPHEMERA_SERVER):
+    print("[Ephemera] SECURITY ERROR: EPHEMERA_SERVER must use HTTPS or localhost", file=sys.stderr)
+    print("[Ephemera] Refusing to send credentials over insecure connection", file=sys.stderr)
+    sys.exit(1)
+
+
 def main():
     # PAM passes username via PAM_USER environment variable
     username = os.environ.get('PAM_USER')
