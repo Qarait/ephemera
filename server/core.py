@@ -11,7 +11,7 @@ from collections import defaultdict
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from server.crypto import encrypt_ca_key, decrypt_ca_key
+from server.crypto import derive_key_from_password, encrypt_ca_key, decrypt_ca_key
 from server.hsm.softhsm import validate_softhsm_boot
 from server.config_ca import (
     CA_BACKEND,
