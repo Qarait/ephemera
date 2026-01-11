@@ -1,7 +1,6 @@
 import os
 import json
 import hashlib
-import shutil
 import secrets
 from pathlib import Path
 

@@ -6,7 +6,6 @@ import datetime
 import secrets
 import base64
 import io
-import tempfile
 from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix

@@ -6,7 +6,6 @@ import os
 import json
 import datetime
 import threading
-from webauthn.helpers import base64url_to_bytes
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
