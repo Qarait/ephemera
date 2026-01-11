@@ -1,7 +1,6 @@
 import os
 import json
 import datetime
-import secrets
 import base64
 import logging
 from logging.handlers import SysLogHandler
@@ -9,7 +8,6 @@ import hashlib
 import uuid
 from collections import defaultdict
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from server.crypto import derive_key_from_password, encrypt_ca_key, decrypt_ca_key
 from server.hsm.softhsm import validate_softhsm_boot

@@ -7,7 +7,7 @@ import subprocess
 import sys
 import getpass
 import webbrowser
-from cli.common import BASE_URL, CONFIG_DIR, SESSION_FILE, KEY_NAME, ensure_config_dir, save_session, load_session
+from cli.common import BASE_URL, SESSION_FILE, KEY_NAME, ensure_config_dir, save_session, load_session
 from cli.server_setup import generate_setup_script
 from pathlib import Path
 from server.backup_manager import create_backup, restore_backup

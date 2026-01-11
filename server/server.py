@@ -210,7 +210,7 @@ def signup():
         json.dump(users, f, indent=2)
         
     # In a real app, send email here.
-    print(f"--- EMAIL VERIFICATION ---")
+    print("--- EMAIL VERIFICATION ---")
     print(f"To: {username}")
     print(f"Link: http://localhost:3000/verify-email.html?token={verification_token}")
     print("--------------------------")
