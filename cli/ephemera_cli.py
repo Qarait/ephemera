@@ -2,7 +2,6 @@
 __version__ = "3.0.0"
 import argparse
 import requests
-import json
 import os
 import subprocess
 import sys
