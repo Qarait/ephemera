@@ -15,7 +15,50 @@
 > **Canonical Source**: [Codeberg](https://codeberg.org/Qarait1/ephemera)  
 > **GitHub Mirror**: [GitHub](https://github.com/Qarait/ephemera) (for availability and hosting)
 
-![Architecture Diagram](assets/diagrams/ephemera_v2_architecture.png)
+## High-Level Architecture
+
+```mermaid
+graph LR
+    subgraph Client["User (Operator)"]
+        SSH["SSH Client"]
+        HW["Hardware Key<br/>WebAuthn / YubiKey"]
+    end
+
+    subgraph Auth["Authentication Boundary"]
+        MFA["WebAuthn MFA<br/><i>Human presence required</i>"]
+        OIDC["OIDC<br/><i>Optional</i>"]
+    end
+
+    subgraph CA["Ephemera SSH Certificate Authority"]
+        CORE["Self-hosted CA<br/>Air-gap capable"]
+        POLICY["Policy Engine<br/><i>Governance at issuance</i>"]
+        BUDGET["Trust Budgeting<br/><i>Optional</i>"]
+    end
+
+    subgraph Targets["Target Servers"]
+        NATIVE["Native OpenSSH<br/>TrustedUserCAKeys"]
+        NOAGENT["No agents<br/>No SSH proxy"]
+    end
+
+    subgraph Audit["Audit & Recovery"]
+        LOG["Tamper-Evident<br/>Audit Log"]
+        BACKUP["Encrypted Backups<br/>Shamir Recovery"]
+    end
+
+    Client --> Auth
+    Auth -->|"Short-lived cert"| CA
+    CA -->|"Certificate expires<br/>automatically"| Targets
+    CA -.->|"Post-fact integrity"| Audit
+
+    style Auth fill:#e8f5e9,stroke:#2e7d32
+    style CA fill:#e3f2fd,stroke:#1565c0
+    style Audit fill:#fff3e0,stroke:#ef6c00
+```
+
+**What Ephemera does:** Governs who may receive access and for how long.  
+**What Ephemera does NOT do:** Runtime monitoring, MITM proxying, command inspection.  
+**Enforcement:** Entirely within native OpenSSH — no Ephemera agent on target servers.  
+**Key rotation:** Not needed — certificates expire automatically.
 
 ## What Ephemera Is
 
