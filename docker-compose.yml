@@ -1,88 +1,32 @@
-version: '3.8'
+# Ephemera - Minimal Docker Compose
+# Goal: docker compose up -d → issue first SSH cert in under 5 minutes
+#
+# This is the default entry point for quick evaluation.
+# For development, use: docker compose -f docker-compose.dev.yml up
+# For testing with SSH target: docker compose -f docker-compose.test.yml up
 
 services:
   ephemera:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/qarait/ephemera:latest
     container_name: ephemera
     ports:
       - "3000:3000"
     volumes:
-      - ./server:/app/server
-      - ./public:/app/public
-      - ephemera_data:/app/data
-      - ephemera_keys:/app/keys
-      - ephemera_ca:/app/ca_store
-      - ./policy.yaml:/app/policy.yaml
-    environment:
-      - FLASK_ENV=development
-      - CA_MASTER_PASSWORD=${CA_MASTER_PASSWORD}
-      # OIDC Configuration (Optional)
-      # - EPHEMERA_AUTH_MODE=oidc
-      # - OIDC_ISSUER_URL=https://accounts.google.com
-      # - OIDC_CLIENT_ID=your-client-id
-      # - OIDC_CLIENT_SECRET=your-client-secret
-      # - OIDC_REDIRECT_URI=http://localhost:3000/auth/callback
-    depends_on:
-      - syslog
-    logging:
-      driver: syslog
-      options:
-        syslog-address: "udp://192.168.1.50:514"
-
-  backup:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: ephemera-backup
-    volumes:
       - ephemera_data:/app/data
       - ephemera_ca:/app/ca_store
-      - ephemera_keys:/root/.ssh:ro # Mount SSH keys for SCP
-      - ./server:/app/server
     environment:
-      - BACKUP_GPG_RECIPIENT=${BACKUP_GPG_RECIPIENT}
-      - BACKUP_DESTINATION=${BACKUP_DESTINATION}
-    command: >
-      /bin/bash -c " echo 'Starting Backup Service...'; while true; do
-        echo 'Running nightly backup...';
-        /app/server/backup.sh || echo 'Backup failed!';
-        sleep 86400;
-      done"
-    depends_on:
-      - syslog
-    logging:
-      driver: syslog
-      options:
-        syslog-address: "udp://192.168.1.50:514"
-
-  syslog:
-    image: balabit/syslog-ng:latest
-    container_name: ephemera-syslog
-    volumes:
-      - ephemera_logs:/var/log
-    ports:
-      - "514:514/udp"
-
-  ssh-target:
-    build:
-      context: ..
-      dockerfile: Dockerfile.ssh-target
-    container_name: ssh-target
-    ports:
-      - "2222:22"
-    depends_on:
-      - ephemera
-    volumes:
-      - ephemera_ca:/ca:ro
-    cap_add:
-      - SYS_ADMIN
-    networks:
-      - default
+      - FLASK_ENV=production
+      # CA_MASTER_PASSWORD is auto-generated on first run if not set
+      # To set manually: echo "CA_MASTER_PASSWORD=your-secret" > .env
+      - CA_MASTER_PASSWORD=${CA_MASTER_PASSWORD:-}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
 
 volumes:
   ephemera_data:
-  ephemera_keys:
   ephemera_ca:
-  ephemera_logs:

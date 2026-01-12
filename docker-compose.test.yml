@@ -1,0 +1,45 @@
+# Ephemera - Test Docker Compose
+# Includes SSH target container for end-to-end testing
+#
+# Usage: docker compose -f docker-compose.test.yml up -d
+# SSH to target: ssh -p 2222 testuser@localhost
+
+services:
+  ephemera:
+    image: ghcr.io/qarait/ephemera:latest
+    container_name: ephemera
+    ports:
+      - "3000:3000"
+    volumes:
+      - ephemera_data:/app/data
+      - ephemera_ca:/app/ca_store
+    environment:
+      - FLASK_ENV=development
+      - CA_MASTER_PASSWORD=${CA_MASTER_PASSWORD:-}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  ssh-target:
+    build:
+      context: ..
+      dockerfile: Dockerfile.ssh-target
+    container_name: ssh-target
+    ports:
+      - "2222:22"
+    depends_on:
+      ephemera:
+        condition: service_healthy
+    volumes:
+      - ephemera_ca:/ca:ro
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      - default
+
+volumes:
+  ephemera_data:
+  ephemera_ca:

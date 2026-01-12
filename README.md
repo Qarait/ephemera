@@ -127,25 +127,42 @@ Trust Budgeting is experimental and may change or be removed.
 
 ## Quick Start
 
+**Goal:** Issue your first SSH certificate in under 5 minutes.
 
-### 1. Server Setup (Docker)
+### 1. Start Ephemera
 
-**Prerequisites:** Docker and Docker Compose.
+```bash
+# Clone and start
+git clone https://github.com/Qarait/ephemera.git
+cd ephemera
+docker compose up -d
+```
 
-1.  **Start the service:**
-    ```bash
-    docker compose up --build -d
-    ```
+> **Note:** CA master password is auto-generated and persisted on first run.  
+> For production, set `CA_MASTER_PASSWORD` in a `.env` file before starting.
 
-2.  **Access the Dashboard:**
-    Open [http://localhost:3000](http://localhost:3000) in your browser.
+### 2. Access the Dashboard
 
-3.  **Login:**
-    -   **Username:** `admin`
-    -   **Password:** (Check the Docker logs for the initial one-time password)
-        ```bash
-        docker compose logs ephemera | grep "Password:"
-        ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+**Default credentials:**
+- **Username:** `admin`
+- **Password:** Check Docker logs:
+  ```bash
+  docker compose logs ephemera | grep "Password:"
+  ```
+
+### 3. Issue Your First Certificate
+
+1. Complete WebAuthn MFA setup (requires hardware key or TouchID)
+2. Click "Request Certificate"
+3. Your certificate is valid for 5 minutes
+
+---
+
+**Alternative Compose Files:**
+- `docker-compose.dev.yml` — Development with local builds and syslog
+- `docker-compose.test.yml` — Includes SSH target for end-to-end testing
 
 ### 2. Client Setup (The Magic)
 
