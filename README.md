@@ -4,7 +4,7 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e51bc11fac8a4f63a61b07200581bdd2)](https://app.codacy.com/gh/Qarait/ephemera/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![Release](https://img.shields.io/github/v/release/ephemerassh/ephemera)
-![License](https://img.shields.io/github/license/ephemerassh/ephemera)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-yellow.svg)
