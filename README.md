@@ -12,7 +12,7 @@
 **Ephemera** is a lightweight, self-hosted SSH Certificate Authority designed to enforce Zero-Trust access for infrastructure. It replaces static SSH keys with short-lived certificates, integrates hardware-backed WebAuthn MFA, and maintains cryptographically verifiable audit trails.
 
 > [!NOTE]
-> **Canonical Source**: [Codeberg](https://codeberg.org/Qarait1/ephemera)  
+> **Canonical Source**: [Codeberg](https://codeberg.org/Qarait/ephemera)  
 > **GitHub Mirror**: [GitHub](https://github.com/Qarait/ephemera) (for availability and hosting)
 
 ## High-Level Architecture
