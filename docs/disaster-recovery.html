@@ -1,155 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disaster Recovery â€” Ephemera</title>
-    <meta name="description"
-        content="Ephemera disaster recovery: Shamir secret sharing for encrypted backups with k-of-n shard recovery.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <!-- Open Graph / Social Media -->
-    <meta property="og:site_name" content="Ephemera">
-    <meta property="og:title" content="Disaster Recovery â€” Ephemera">
-    <meta property="og:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
-    <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
-    <meta property="og:url" content="https://qarait.github.io/ephemera/disaster-recovery.html">
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Disaster Recovery â€” Ephemera">
-    <meta name="twitter:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
-    <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
-</head>
-
-<body>
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo">Ephemera</a>
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="architecture.html">Architecture</a>
-                <a href="threat-model.html">Threat Model</a>
-                <a href="cli.html">CLI</a>
-                <a href="disaster-recovery.html" class="active">Recovery</a>
-                <a href="https://codeberg.org/Qarait1/ephemera" class="repo-btn">Repository (Codeberg)</a>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <h1>Disaster Recovery</h1>
-            <p class="lead">Sovereign backup with Shamir secret sharing. No cloud dependency.</p>
-
-            <h2>Overview</h2>
-            <p>
-                Ephemera encrypts critical data (CA keys, database) with a random password,
-                then splits that password into Shamir shards. No single person can restore
-                the backup, but a quorum can.
-            </p>
-
-            <h2>Create Backup</h2>
-            <p>Generate encrypted backup and split the password into shards:</p>
-            <pre><code>ephemera backup-create --k 3 --n 5 --out-dir ./backup</code></pre>
-            <p>This produces:</p>
-            <ul>
-                <li><code>ephemera_backup.enc</code> â€” The encrypted archive</li>
-                <li><code>backup_shard_1_of_5.json</code> through <code>backup_shard_5_of_5.json</code> â€” Password
-                    shards</li>
-            </ul>
-
-            <div class="note warning">
-                <div class="note-title">Shard Distribution</div>
-                Store each shard in a separate, secure location with different custodians.
-                The encrypted backup file is useless without the required number of shards.
-            </div>
-
-            <h2>Restore Backup</h2>
-            <p>Restore using the encrypted file and any k shards:</p>
-            <pre><code>ephemera backup-restore \
-  --backup ./backup/ephemera_backup.enc \
-  --shards ./backup/backup_shard_1_of_5.json \
-           ./backup/backup_shard_2_of_5.json \
-           ./backup/backup_shard_4_of_5.json \
-  --out-dir ./restored</code></pre>
-            <p>
-                In this example, 3-of-5 shards are required. Any 3 shards can reconstruct
-                the password. The specific shard numbers do not matter.
-            </p>
-
-            <h2>Parameters</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>--k</code></td>
-                            <td>Threshold: minimum shards required to restore</td>
-                        </tr>
-                        <tr>
-                            <td><code>--n</code></td>
-                            <td>Total number of shards to generate</td>
-                        </tr>
-                        <tr>
-                            <td><code>--out-dir</code></td>
-                            <td>Directory for output files</td>
-                        </tr>
-                        <tr>
-                            <td><code>--backup</code></td>
-                            <td>Path to encrypted backup file (restore only)</td>
-                        </tr>
-                        <tr>
-                            <td><code>--shards</code></td>
-                            <td>Paths to shard files (restore only)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h2>Security Properties</h2>
-            <ul>
-                <li>Backup is encrypted with AES-256-GCM.</li>
-                <li>Password is never stored; only shards exist.</li>
-                <li>Shards are portable JSON files (no QR codes).</li>
-                <li>Air-gap compatible: no network required for recovery.</li>
-            </ul>
-
-            <h2>CA Key Rotation</h2>
-            <p>
-                Ephemera supports zero-downtime CA key rotation. Old keys remain trusted
-                during the transition period:
-            </p>
-            <pre><code>ephemera rotate-ca</code></pre>
-            <p>
-                The rotation lifecycle maintains active, previous, and next keys.
-                Existing certificates remain valid until expiry.
-            </p>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <span>Documentation applies to Ephemera v3.1.0 â€¢ Last Updated: 2025-12-19 â€¢ Source code (canonical):
-                Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
-                availability.<br>
-                <strong>Threat model and security assumptions are documented <a
-                        href="https://codeberg.org/Qarait1/ephemera/src/branch/main/SECURITY_MODEL.md"
-                        style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
-                    welcome.</strong></span>
-            <a href="https://codeberg.org/Qarait1/ephemera">Codeberg</a>
-        </div>
-    </footer>
-</body>
-
-</html>
+:<:!:D:O:C:T:Y:P:E: :h:t:m:l:>:
+:<:h:t:m:l: :l:a:n:g:=:":e:n:":>:
+:
+:<:h:e:a:d:>:
+: : : : :<:m:e:t:a: :c:h:a:r:s:e:t:=:":U:T:F:-:8:":>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":v:i:e:w:p:o:r:t:": :c:o:n:t:e:n:t:=:":w:i:d:t:h:=:d:e:v:i:c:e:-:w:i:d:t:h:,: :i:n:i:t:i:a:l:-:s:c:a:l:e:=:1:.:0:":>:
+: : : : :<:t:i:t:l:e:>:D:i:s:a:s:t:e:r: :R:e:c:o:v:e:r:y: :â:€:”: :E:p:h:e:m:e:r:a:<:/:t:i:t:l:e:>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":d:e:s:c:r:i:p:t:i:o:n:":
+: : : : : : : : :c:o:n:t:e:n:t:=:":E:p:h:e:m:e:r:a: :d:i:s:a:s:t:e:r: :r:e:c:o:v:e:r:y::: :S:h:a:m:i:r: :s:e:c:r:e:t: :s:h:a:r:i:n:g: :f:o:r: :e:n:c:r:y:p:t:e:d: :b:a:c:k:u:p:s: :w:i:t:h: :k:-:o:f:-:n: :s:h:a:r:d: :r:e:c:o:v:e:r:y:.:":>:
+: : : : :<:l:i:n:k: :r:e:l:=:":p:r:e:c:o:n:n:e:c:t:": :h:r:e:f:=:":h:t:t:p:s:::/:/:f:o:n:t:s:.:g:o:o:g:l:e:a:p:i:s:.:c:o:m:":>:
+: : : : :<:l:i:n:k: :r:e:l:=:":p:r:e:c:o:n:n:e:c:t:": :h:r:e:f:=:":h:t:t:p:s:::/:/:f:o:n:t:s:.:g:s:t:a:t:i:c:.:c:o:m:": :c:r:o:s:s:o:r:i:g:i:n:>:
+: : : : :<:l:i:n:k:
+: : : : : : : : :h:r:e:f:=:":h:t:t:p:s:::/:/:f:o:n:t:s:.:g:o:o:g:l:e:a:p:i:s:.:c:o:m:/:c:s:s:2:?:f:a:m:i:l:y:=:I:n:t:e:r:::w:g:h:t:@:4:0:0:;:5:0:0:;:6:0:0:&:f:a:m:i:l:y:=:J:e:t:B:r:a:i:n:s:+:M:o:n:o:::w:g:h:t:@:4:0:0:;:5:0:0:&:d:i:s:p:l:a:y:=:s:w:a:p:":
+: : : : : : : : :r:e:l:=:":s:t:y:l:e:s:h:e:e:t:":>:
+: : : : :<:l:i:n:k: :r:e:l:=:":s:t:y:l:e:s:h:e:e:t:": :h:r:e:f:=:":s:t:y:l:e:s:.:c:s:s:":>:
+: : : : :<:l:i:n:k: :r:e:l:=:":i:c:o:n:": :t:y:p:e:=:":i:m:a:g:e:/:p:n:g:": :h:r:e:f:=:":a:s:s:e:t:s:/:i:m:a:g:e:s:/:f:a:v:i:c:o:n:.:p:n:g:":>:
+: : : : :<:!:-:-: :O:p:e:n: :G:r:a:p:h: :/: :S:o:c:i:a:l: :M:e:d:i:a: :-:-:>:
+: : : : :<:m:e:t:a: :p:r:o:p:e:r:t:y:=:":o:g:::s:i:t:e:_:n:a:m:e:": :c:o:n:t:e:n:t:=:":E:p:h:e:m:e:r:a:":>:
+: : : : :<:m:e:t:a: :p:r:o:p:e:r:t:y:=:":o:g:::t:i:t:l:e:": :c:o:n:t:e:n:t:=:":D:i:s:a:s:t:e:r: :R:e:c:o:v:e:r:y: :â:€:”: :E:p:h:e:m:e:r:a:":>:
+: : : : :<:m:e:t:a: :p:r:o:p:e:r:t:y:=:":o:g:::d:e:s:c:r:i:p:t:i:o:n:": :c:o:n:t:e:n:t:=:":S:o:v:e:r:e:i:g:n: :b:a:c:k:u:p: :r:e:s:t:o:r:a:t:i:o:n: :u:s:i:n:g: :S:h:a:m:i:r: :S:e:c:r:e:t: :S:h:a:r:i:n:g:.:":>:
+: : : : :<:m:e:t:a: :p:r:o:p:e:r:t:y:=:":o:g:::i:m:a:g:e:": :c:o:n:t:e:n:t:=:":h:t:t:p:s:::/:/:q:a:r:a:i:t:.:g:i:t:h:u:b:.:i:o:/:e:p:h:e:m:e:r:a:/:a:s:s:e:t:s:/:i:m:a:g:e:s:/:e:p:h:e:m:e:r:a:_:c:a:r:d:.:p:n:g:":>:
+: : : : :<:m:e:t:a: :p:r:o:p:e:r:t:y:=:":o:g:::u:r:l:": :c:o:n:t:e:n:t:=:":h:t:t:p:s:::/:/:q:a:r:a:i:t:.:g:i:t:h:u:b:.:i:o:/:e:p:h:e:m:e:r:a:/:d:i:s:a:s:t:e:r:-:r:e:c:o:v:e:r:y:.:h:t:m:l:":>:
+: : : : :<:!:-:-: :T:w:i:t:t:e:r: :-:-:>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":t:w:i:t:t:e:r:::c:a:r:d:": :c:o:n:t:e:n:t:=:":s:u:m:m:a:r:y:_:l:a:r:g:e:_:i:m:a:g:e:":>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":t:w:i:t:t:e:r:::t:i:t:l:e:": :c:o:n:t:e:n:t:=:":D:i:s:a:s:t:e:r: :R:e:c:o:v:e:r:y: :â:€:”: :E:p:h:e:m:e:r:a:":>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":t:w:i:t:t:e:r:::d:e:s:c:r:i:p:t:i:o:n:": :c:o:n:t:e:n:t:=:":S:o:v:e:r:e:i:g:n: :b:a:c:k:u:p: :r:e:s:t:o:r:a:t:i:o:n: :u:s:i:n:g: :S:h:a:m:i:r: :S:e:c:r:e:t: :S:h:a:r:i:n:g:.:":>:
+: : : : :<:m:e:t:a: :n:a:m:e:=:":t:w:i:t:t:e:r:::i:m:a:g:e:": :c:o:n:t:e:n:t:=:":h:t:t:p:s:::/:/:q:a:r:a:i:t:.:g:i:t:h:u:b:.:i:o:/:e:p:h:e:m:e:r:a:/:a:s:s:e:t:s:/:i:m:a:g:e:s:/:e:p:h:e:m:e:r:a:_:c:a:r:d:.:p:n:g:":>:
+:<:/:h:e:a:d:>:
+:
+:<:b:o:d:y:>:
+: : : : :<:h:e:a:d:e:r:>:
+: : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":c:o:n:t:a:i:n:e:r:":>:
+: : : : : : : : : : : : :<:a: :h:r:e:f:=:":i:n:d:e:x:.:h:t:m:l:": :c:l:a:s:s:=:":l:o:g:o:":>:E:p:h:e:m:e:r:a:<:/:a:>:
+: : : : : : : : : : : : :<:n:a:v:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":i:n:d:e:x:.:h:t:m:l:":>:H:o:m:e:<:/:a:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":a:r:c:h:i:t:e:c:t:u:r:e:.:h:t:m:l:":>:A:r:c:h:i:t:e:c:t:u:r:e:<:/:a:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":t:h:r:e:a:t:-:m:o:d:e:l:.:h:t:m:l:":>:T:h:r:e:a:t: :M:o:d:e:l:<:/:a:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":c:l:i:.:h:t:m:l:":>:C:L:I:<:/:a:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":d:i:s:a:s:t:e:r:-:r:e:c:o:v:e:r:y:.:h:t:m:l:": :c:l:a:s:s:=:":a:c:t:i:v:e:":>:R:e:c:o:v:e:r:y:<:/:a:>:
+: : : : : : : : : : : : : : : : :<:a: :h:r:e:f:=:":h:t:t:p:s:::/:/:c:o:d:e:b:e:r:g:.:o:r:g:/:Q:a:r:a:i:t:1:/:e:p:h:e:m:e:r:a:": :c:l:a:s:s:=:":r:e:p:o:-:b:t:n:":>:R:e:p:o:s:i:t:o:r:y: :(:C:o:d:e:b:e:r:g:):<:/:a:>:
+: : : : : : : : : : : : :<:/:n:a:v:>:
+: : : : : : : : :<:/:d:i:v:>:
+: : : : :<:/:h:e:a:d:e:r:>:
+:
+: : : : :<:m:a:i:n:>:
+: : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":c:o:n:t:a:i:n:e:r:":>:
+: : : : : : : : : : : : :<:h:1:>:D:i:s:a:s:t:e:r: :R:e:c:o:v:e:r:y:<:/:h:1:>:
+: : : : : : : : : : : : :<:p: :c:l:a:s:s:=:":l:e:a:d:":>:S:o:v:e:r:e:i:g:n: :b:a:c:k:u:p: :w:i:t:h: :S:h:a:m:i:r: :s:e:c:r:e:t: :s:h:a:r:i:n:g:.: :N:o: :c:l:o:u:d: :d:e:p:e:n:d:e:n:c:y:.:<:/:p:>:
+:
+: : : : : : : : : : : : :<:h:2:>:O:v:e:r:v:i:e:w:<:/:h:2:>:
+: : : : : : : : : : : : :<:p:>:
+: : : : : : : : : : : : : : : : :E:p:h:e:m:e:r:a: :e:n:c:r:y:p:t:s: :c:r:i:t:i:c:a:l: :d:a:t:a: :(:C:A: :k:e:y:s:,: :d:a:t:a:b:a:s:e:): :w:i:t:h: :a: :r:a:n:d:o:m: :p:a:s:s:w:o:r:d:,:
+: : : : : : : : : : : : : : : : :t:h:e:n: :s:p:l:i:t:s: :t:h:a:t: :p:a:s:s:w:o:r:d: :i:n:t:o: :S:h:a:m:i:r: :s:h:a:r:d:s:.: :N:o: :s:i:n:g:l:e: :p:e:r:s:o:n: :c:a:n: :r:e:s:t:o:r:e:
+: : : : : : : : : : : : : : : : :t:h:e: :b:a:c:k:u:p:,: :b:u:t: :a: :q:u:o:r:u:m: :c:a:n:.:
+: : : : : : : : : : : : :<:/:p:>:
+:
+: : : : : : : : : : : : :<:h:2:>:C:r:e:a:t:e: :B:a:c:k:u:p:<:/:h:2:>:
+: : : : : : : : : : : : :<:p:>:G:e:n:e:r:a:t:e: :e:n:c:r:y:p:t:e:d: :b:a:c:k:u:p: :a:n:d: :s:p:l:i:t: :t:h:e: :p:a:s:s:w:o:r:d: :i:n:t:o: :s:h:a:r:d:s:::<:/:p:>:
+: : : : : : : : : : : : :<:p:r:e:>:<:c:o:d:e:>:e:p:h:e:m:e:r:a: :b:a:c:k:u:p:-:c:r:e:a:t:e: :-:-:k: :3: :-:-:n: :5: :-:-:o:u:t:-:d:i:r: :.:/:b:a:c:k:u:p:<:/:c:o:d:e:>:<:/:p:r:e:>:
+: : : : : : : : : : : : :<:p:>:T:h:i:s: :p:r:o:d:u:c:e:s:::<:/:p:>:
+: : : : : : : : : : : : :<:u:l:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:<:c:o:d:e:>:e:p:h:e:m:e:r:a:_:b:a:c:k:u:p:.:e:n:c:<:/:c:o:d:e:>: :â:€:”: :T:h:e: :e:n:c:r:y:p:t:e:d: :a:r:c:h:i:v:e:<:/:l:i:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:<:c:o:d:e:>:b:a:c:k:u:p:_:s:h:a:r:d:_:1:_:o:f:_:5:.:j:s:o:n:<:/:c:o:d:e:>: :t:h:r:o:u:g:h: :<:c:o:d:e:>:b:a:c:k:u:p:_:s:h:a:r:d:_:5:_:o:f:_:5:.:j:s:o:n:<:/:c:o:d:e:>: :â:€:”: :P:a:s:s:w:o:r:d:
+: : : : : : : : : : : : : : : : : : : : :s:h:a:r:d:s:<:/:l:i:>:
+: : : : : : : : : : : : :<:/:u:l:>:
+:
+: : : : : : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":n:o:t:e: :w:a:r:n:i:n:g:":>:
+: : : : : : : : : : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":n:o:t:e:-:t:i:t:l:e:":>:S:h:a:r:d: :D:i:s:t:r:i:b:u:t:i:o:n:<:/:d:i:v:>:
+: : : : : : : : : : : : : : : : :S:t:o:r:e: :e:a:c:h: :s:h:a:r:d: :i:n: :a: :s:e:p:a:r:a:t:e:,: :s:e:c:u:r:e: :l:o:c:a:t:i:o:n: :w:i:t:h: :d:i:f:f:e:r:e:n:t: :c:u:s:t:o:d:i:a:n:s:.:
+: : : : : : : : : : : : : : : : :T:h:e: :e:n:c:r:y:p:t:e:d: :b:a:c:k:u:p: :f:i:l:e: :i:s: :u:s:e:l:e:s:s: :w:i:t:h:o:u:t: :t:h:e: :r:e:q:u:i:r:e:d: :n:u:m:b:e:r: :o:f: :s:h:a:r:d:s:.:
+: : : : : : : : : : : : :<:/:d:i:v:>:
+:
+: : : : : : : : : : : : :<:h:2:>:R:e:s:t:o:r:e: :B:a:c:k:u:p:<:/:h:2:>:
+: : : : : : : : : : : : :<:p:>:R:e:s:t:o:r:e: :u:s:i:n:g: :t:h:e: :e:n:c:r:y:p:t:e:d: :f:i:l:e: :a:n:d: :a:n:y: :k: :s:h:a:r:d:s:::<:/:p:>:
+: : : : : : : : : : : : :<:p:r:e:>:<:c:o:d:e:>:e:p:h:e:m:e:r:a: :b:a:c:k:u:p:-:r:e:s:t:o:r:e: :\:
+: : :-:-:b:a:c:k:u:p: :.:/:b:a:c:k:u:p:/:e:p:h:e:m:e:r:a:_:b:a:c:k:u:p:.:e:n:c: :\:
+: : :-:-:s:h:a:r:d:s: :.:/:b:a:c:k:u:p:/:b:a:c:k:u:p:_:s:h:a:r:d:_:1:_:o:f:_:5:.:j:s:o:n: :\:
+: : : : : : : : : : : :.:/:b:a:c:k:u:p:/:b:a:c:k:u:p:_:s:h:a:r:d:_:2:_:o:f:_:5:.:j:s:o:n: :\:
+: : : : : : : : : : : :.:/:b:a:c:k:u:p:/:b:a:c:k:u:p:_:s:h:a:r:d:_:4:_:o:f:_:5:.:j:s:o:n: :\:
+: : :-:-:o:u:t:-:d:i:r: :.:/:r:e:s:t:o:r:e:d:<:/:c:o:d:e:>:<:/:p:r:e:>:
+: : : : : : : : : : : : :<:p:>:
+: : : : : : : : : : : : : : : : :I:n: :t:h:i:s: :e:x:a:m:p:l:e:,: :3:-:o:f:-:5: :s:h:a:r:d:s: :a:r:e: :r:e:q:u:i:r:e:d:.: :A:n:y: :3: :s:h:a:r:d:s: :c:a:n: :r:e:c:o:n:s:t:r:u:c:t:
+: : : : : : : : : : : : : : : : :t:h:e: :p:a:s:s:w:o:r:d:.: :T:h:e: :s:p:e:c:i:f:i:c: :s:h:a:r:d: :n:u:m:b:e:r:s: :d:o: :n:o:t: :m:a:t:t:e:r:.:
+: : : : : : : : : : : : :<:/:p:>:
+:
+: : : : : : : : : : : : :<:h:2:>:P:a:r:a:m:e:t:e:r:s:<:/:h:2:>:
+: : : : : : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":t:a:b:l:e:-:c:o:n:t:a:i:n:e:r:":>:
+: : : : : : : : : : : : : : : : :<:t:a:b:l:e:>:
+: : : : : : : : : : : : : : : : : : : : :<:t:h:e:a:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:h:>:P:a:r:a:m:e:t:e:r:<:/:t:h:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:h:>:D:e:s:c:r:i:p:t:i:o:n:<:/:t:h:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : :<:/:t:h:e:a:d:>:
+: : : : : : : : : : : : : : : : : : : : :<:t:b:o:d:y:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:<:c:o:d:e:>:-:-:k:<:/:c:o:d:e:>:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:T:h:r:e:s:h:o:l:d::: :m:i:n:i:m:u:m: :s:h:a:r:d:s: :r:e:q:u:i:r:e:d: :t:o: :r:e:s:t:o:r:e:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:<:c:o:d:e:>:-:-:n:<:/:c:o:d:e:>:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:T:o:t:a:l: :n:u:m:b:e:r: :o:f: :s:h:a:r:d:s: :t:o: :g:e:n:e:r:a:t:e:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:<:c:o:d:e:>:-:-:o:u:t:-:d:i:r:<:/:c:o:d:e:>:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:D:i:r:e:c:t:o:r:y: :f:o:r: :o:u:t:p:u:t: :f:i:l:e:s:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:<:c:o:d:e:>:-:-:b:a:c:k:u:p:<:/:c:o:d:e:>:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:P:a:t:h: :t:o: :e:n:c:r:y:p:t:e:d: :b:a:c:k:u:p: :f:i:l:e: :(:r:e:s:t:o:r:e: :o:n:l:y:):<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:t:r:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:<:c:o:d:e:>:-:-:s:h:a:r:d:s:<:/:c:o:d:e:>:<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : : : : : :<:t:d:>:P:a:t:h:s: :t:o: :s:h:a:r:d: :f:i:l:e:s: :(:r:e:s:t:o:r:e: :o:n:l:y:):<:/:t:d:>:
+: : : : : : : : : : : : : : : : : : : : : : : : :<:/:t:r:>:
+: : : : : : : : : : : : : : : : : : : : :<:/:t:b:o:d:y:>:
+: : : : : : : : : : : : : : : : :<:/:t:a:b:l:e:>:
+: : : : : : : : : : : : :<:/:d:i:v:>:
+:
+: : : : : : : : : : : : :<:h:2:>:S:e:c:u:r:i:t:y: :P:r:o:p:e:r:t:i:e:s:<:/:h:2:>:
+: : : : : : : : : : : : :<:u:l:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:B:a:c:k:u:p: :i:s: :e:n:c:r:y:p:t:e:d: :w:i:t:h: :A:E:S:-:2:5:6:-:G:C:M:.:<:/:l:i:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:P:a:s:s:w:o:r:d: :i:s: :n:e:v:e:r: :s:t:o:r:e:d:;: :o:n:l:y: :s:h:a:r:d:s: :e:x:i:s:t:.:<:/:l:i:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:S:h:a:r:d:s: :a:r:e: :p:o:r:t:a:b:l:e: :J:S:O:N: :f:i:l:e:s: :(:n:o: :Q:R: :c:o:d:e:s:):.:<:/:l:i:>:
+: : : : : : : : : : : : : : : : :<:l:i:>:A:i:r:-:g:a:p: :c:o:m:p:a:t:i:b:l:e::: :n:o: :n:e:t:w:o:r:k: :r:e:q:u:i:r:e:d: :f:o:r: :r:e:c:o:v:e:r:y:.:<:/:l:i:>:
+: : : : : : : : : : : : :<:/:u:l:>:
+:
+: : : : : : : : : : : : :<:h:2:>:C:A: :K:e:y: :R:o:t:a:t:i:o:n:<:/:h:2:>:
+: : : : : : : : : : : : :<:p:>:
+: : : : : : : : : : : : : : : : :E:p:h:e:m:e:r:a: :s:u:p:p:o:r:t:s: :z:e:r:o:-:d:o:w:n:t:i:m:e: :C:A: :k:e:y: :r:o:t:a:t:i:o:n:.: :O:l:d: :k:e:y:s: :r:e:m:a:i:n: :t:r:u:s:t:e:d:
+: : : : : : : : : : : : : : : : :d:u:r:i:n:g: :t:h:e: :t:r:a:n:s:i:t:i:o:n: :p:e:r:i:o:d:::
+: : : : : : : : : : : : :<:/:p:>:
+: : : : : : : : : : : : :<:p:r:e:>:<:c:o:d:e:>:e:p:h:e:m:e:r:a: :r:o:t:a:t:e:-:c:a:<:/:c:o:d:e:>:<:/:p:r:e:>:
+: : : : : : : : : : : : :<:p:>:
+: : : : : : : : : : : : : : : : :T:h:e: :r:o:t:a:t:i:o:n: :l:i:f:e:c:y:c:l:e: :m:a:i:n:t:a:i:n:s: :a:c:t:i:v:e:,: :p:r:e:v:i:o:u:s:,: :a:n:d: :n:e:x:t: :k:e:y:s:.:
+: : : : : : : : : : : : : : : : :E:x:i:s:t:i:n:g: :c:e:r:t:i:f:i:c:a:t:e:s: :r:e:m:a:i:n: :v:a:l:i:d: :u:n:t:i:l: :e:x:p:i:r:y:.:
+: : : : : : : : : : : : :<:/:p:>:
+: : : : : : : : :<:/:d:i:v:>:
+: : : : :<:/:m:a:i:n:>:
+:
+: : : : :<:f:o:o:t:e:r:>:
+: : : : : : : : :<:d:i:v: :c:l:a:s:s:=:":c:o:n:t:a:i:n:e:r:":>:
+: : : : : : : : : : : : :<:s:p:a:n:>:D:o:c:u:m:e:n:t:a:t:i:o:n: :a:p:p:l:i:e:s: :t:o: :E:p:h:e:m:e:r:a: :v:3:.:1:.:0: :â:€:¢: :L:a:s:t: :U:p:d:a:t:e:d::: :2:0:2:5:-:1:2:-:1:9: :â:€:¢: :S:o:u:r:c:e: :c:o:d:e: :(:c:a:n:o:n:i:c:a:l:):::
+: : : : : : : : : : : : : : : : :C:o:d:e:b:e:r:g:.: :G:i:t:H:u:b: :m:i:r:r:o:r: :a:v:a:i:l:a:b:l:e: :f:o:r: :c:o:n:v:e:n:i:e:n:c:e:.: :T:h:i:s: :d:o:c:u:m:e:n:t:a:t:i:o:n: :i:s: :h:o:s:t:e:d: :o:n: :G:i:t:H:u:b: :P:a:g:e:s: :f:o:r:
+: : : : : : : : : : : : : : : : :a:v:a:i:l:a:b:i:l:i:t:y:.:<:b:r:>:
+: : : : : : : : : : : : : : : : :<:s:t:r:o:n:g:>:T:h:r:e:a:t: :m:o:d:e:l: :a:n:d: :s:e:c:u:r:i:t:y: :a:s:s:u:m:p:t:i:o:n:s: :a:r:e: :d:o:c:u:m:e:n:t:e:d: :<:a:
+: : : : : : : : : : : : : : : : : : : : : : : : :h:r:e:f:=:":h:t:t:p:s:::/:/:c:o:d:e:b:e:r:g:.:o:r:g:/:Q:a:r:a:i:t:1:/:e:p:h:e:m:e:r:a:/:s:r:c:/:b:r:a:n:c:h:/:m:a:i:n:/:S:E:C:U:R:I:T:Y:_:M:O:D:E:L:.:m:d:":
+: : : : : : : : : : : : : : : : : : : : : : : : :s:t:y:l:e:=:":c:o:l:o:r::: :v:a:r:(:-:-:a:c:c:e:n:t:):;: :t:e:x:t:-:d:e:c:o:r:a:t:i:o:n::: :u:n:d:e:r:l:i:n:e:;:":>:h:e:r:e:<:/:a:>:.: :F:e:e:d:b:a:c:k: :a:n:d: :c:r:i:t:i:q:u:e: :a:r:e:
+: : : : : : : : : : : : : : : : : : : : :w:e:l:c:o:m:e:.:<:/:s:t:r:o:n:g:>:<:/:s:p:a:n:>:
+: : : : : : : : : : : : :<:a: :h:r:e:f:=:":h:t:t:p:s:::/:/:c:o:d:e:b:e:r:g:.:o:r:g:/:Q:a:r:a:i:t:1:/:e:p:h:e:m:e:r:a:":>:C:o:d:e:b:e:r:g:<:/:a:>:
+: : : : : : : : :<:/:d:i:v:>:
+: : : : :<:/:f:o:o:t:e:r:>:
+:<:/:b:o:d:y:>:
+:
+:<:/:h:t:m:l:>:
