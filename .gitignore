@@ -30,6 +30,12 @@ dist/
 build/
 *.spec
 *.egg-info/
+target_fuzz/
+fuzz_failures/
+ 
+# --- LOGS ---
+server/logs/
+*.log
 
 # --- IDE SETTINGS ---
 .idea/
