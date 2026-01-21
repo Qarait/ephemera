@@ -1,4 +1,4 @@
-# Ephemera — Zero-Trust SSH Certificate Authority
+# Ephemera: Zero-Trust SSH Certificate Authority
 
 [![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
@@ -58,8 +58,8 @@ graph LR
 
 **What Ephemera does:** Governs who may receive access and for how long.  
 **What Ephemera does NOT do:** Runtime monitoring, MITM proxying, command inspection.  
-**Enforcement:** Entirely within native OpenSSH — no Ephemera agent on target servers.  
-**Key rotation:** Not needed — certificates expire automatically.
+**Enforcement:** Entirely within native OpenSSH: no Ephemera agent on target servers.  
+**Key rotation:** Not needed: certificates expire automatically.
 
 ## What Ephemera Is
 
