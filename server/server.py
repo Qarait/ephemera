@@ -31,6 +31,7 @@ from .config_auth import AUTH_MODE, AuthMode, validate_auth_config
 from .auth_oidc import oidc_bp, init_oidc
 from .policy import PolicyEngine, parse_duration
 from .trust_budget import TrustBudgetLedger
+from .gatebridge import shadow_evaluate, log_policy_mismatch
 
 app = Flask(__name__, static_folder=PUBLIC_DIR)
 # Trust X-Forwarded-For headers from the Docker gateway/proxy
@@ -785,6 +786,14 @@ def request_cert():
         policy_result = policy_engine.evaluate(user_context)
         principals = policy_result['principals']
         max_duration_minutes = parse_duration(policy_result['max_duration'])
+        
+        # --- Shadow Evaluation (Observational Only) ---
+        # Gate0 runs in parallel for validation. Never affects production.
+        # Future: May be sampled or rate-limited if overhead becomes measurable.
+        shadow_result = shadow_evaluate(POLICY_FILE, user_context)
+        if shadow_result and not shadow_result.get("match"):
+            log_policy_mismatch(policy_result, shadow_result, user_context)
+        # --- End Shadow Evaluation ---
         
         # Log Policy Match
         append_audit_log({
