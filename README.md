@@ -72,11 +72,11 @@ MITM proxies, custom protocols, or cloud dependencies.
 
 ## What Ephemera Is Not
 
-- Not an SSH proxy or MITM gateway
-- Not a PAM replacement
-- Not a runtime monitoring or behavior analysis tool
-- Not a cloud service
-- Not a SIEM or detection platform
+**Traffic Guarding**: Ephemera does not act as an SSH proxy or MITM gateway.
+**Native Integration**: It is not a PAM replacement.
+**Zero Monitoring**: It does not perform runtime monitoring or behavior analysis.
+**Sovereign Hosting**: It is a self-hosted tool, not a cloud service.
+**Explicit Focus**: It is not a SIEM or general detection platform.
 
 ## Project Status
 
@@ -92,21 +92,21 @@ Traditional SSH relies on long-lived private keys spread across laptops and serv
 ## Positioning
 
 ### Best For
-- **Sovereign Deployments**: Teams requiring full ownership of their CA without external cloud dependencies.
-- **Air-Gapped Environments**: Designed to operate without outbound internet access once deployed.
-- **Minimal Overhead**: Organizations that need strong SSH security without the complexity of managing a full secrets platform.
+**Sovereign Deployments**: Teams requiring full ownership of their CA without external cloud dependencies.
+**Air-Gapped Environments**: Designed to operate without outbound internet access once deployed.
+**Minimal Overhead**: Organizations that need strong SSH security without the complexity of managing a full secrets platform.
 
 ### Not For
-- **Enterprise IAM Consolidation**: If you require deep integration with complex AD/LDAP hierarchies, **Teleport** or **HashiCorp Vault** are better suited.
-- **Managed Service Preference**: Ephemera is self-hosted and does not offer a SaaS variant.
+**Enterprise IAM**: If you require deep integration with complex AD/LDAP hierarchies, Teleport or HashiCorp Vault are better suited.
+**Managed Services**: Ephemera is strictly self-hosted and does not offer a SaaS variant.
 
 ## Key Capabilities
 
-- **Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
-- **WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
-- **Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
-- **Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
-- **Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
+**Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
+**WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
+**Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
+**Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
+**Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
 
 ![Sudo Hang](assets/screenshots/sudo_hang.png)
 
@@ -117,10 +117,10 @@ Ephemera includes an experimental, opt-in governance primitive called Trust Budg
 Trust Budgeting limits cumulative privileged authority at certificate issuance time by treating access as a finite, visible resource. Each certificate issuance consumes an explicit budget. When the budget is exhausted, normal issuance stops until the budget resets or a separate emergency (break-glass) path is used.
 
 This mechanism:
-- operates only at certificate issuance time
-- introduces no runtime monitoring or agents
-- is disabled by default
-- is not a security guarantee
+**Issuance Logic**: Operates only at certificate issuance time.
+**Zero Agents**: Introduces no runtime monitoring or agents.
+**Opt-in Model**: Disabled by default.
+**Technical Limit**: Not a security guarantee.
 
 Trust Budgeting is experimental and may change or be removed.
 
@@ -162,8 +162,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 
 **Alternative Compose Files:**
-- `docker-compose.dev.yml` — Development with local builds and syslog
-- `docker-compose.test.yml` — Includes SSH target for end-to-end testing
+**Development Context**: docker-compose.dev.yml includes local builds and syslog.
+**End-to-End Testing**: docker-compose.test.yml includes a dedicated SSH target server.
 
 ### 2. Client Setup (The Magic)
 
@@ -244,9 +244,9 @@ rules:
 ```
 
 ## Documentation
-- See [ARCHITECTURE.md](ARCHITECTURE.md) for design details.
-- See [SECURITY_MODEL.md](SECURITY_MODEL.md) for threat assumptions and trust boundaries.
-- See [docs/](docs/) for additional guides.
+**Architecture**: See ARCHITECTURE.md for design details.
+**Security**: See SECURITY_MODEL.md for threat assumptions and trust boundaries.
+**Guides**: See docs/ for additional integration guides.
 
 ## Security
 Please see [SECURITY.md](SECURITY.md) for responsible disclosure information.
