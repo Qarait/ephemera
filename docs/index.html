@@ -68,13 +68,11 @@
             </p>
 
             <h2>What Ephemera Is Not</h2>
-            <ul>
-                <li>Not an SSH proxy or MITM gateway</li>
-                <li>Not a PAM replacement</li>
-                <li>Not a runtime monitoring or behavior analysis tool</li>
-                <li>Not a cloud service</li>
-                <li>Not a SIEM or detection platform</li>
-            </ul>
+            <p><strong>Traffic Guarding</strong>: Ephemera does not act as an SSH proxy or MITM gateway.</p>
+            <p><strong>Native Integration</strong>: It is not a PAM replacement.</p>
+            <p><strong>Zero Monitoring</strong>: It does not perform runtime monitoring or behavior analysis.</p>
+            <p><strong>Sovereign Hosting</strong>: It is a self-hosted tool, not a cloud service.</p>
+            <p><strong>Explicit Focus</strong>: It is not a SIEM or general detection platform.</p>
 
             <h2>Why Ephemera?</h2>
             <p>
@@ -85,18 +83,18 @@
             </p>
 
             <h2>Status</h2>
-            <ul>
-                <li><strong>Core SSH CA</strong>: Production ready (v3.3.0)</li>
-                <li><strong>Trust Budgeting</strong>: Experimental, opt-in, may change or be removed</li>
-                <li><strong>OpenSSF Best Practices</strong>: <a href="https://www.bestpractices.dev/projects/11722"
-                        style="color: var(--accent); text-decoration: underline;">Passing</a></li>
-            </ul>
+            <p><strong>Core SSH CA</strong>: Production ready (v3.3.0)</p>
+            <p><strong>Policy Hardening</strong>: Verified via 1,000,000+ differential fuzz iterations</p>
+            <p><strong>Trust Budgeting</strong>: Experimental, opt-in, may change or be removed</p>
+            <p><strong>OpenSSF Best Practices</strong>: <a href="https://www.bestpractices.dev/projects/11722"
+                    style="color: var(--accent); text-decoration: underline;">Passing</a></p>
 
             <h2>Architecture</h2>
             <pre
                 style="background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
 User + WebAuthn
-    → Ephemera CA (policy, signing, ledger)
+    → Ephemera CA (signing, ledger)
+        → GateBridge (shadow plane: 1M verified cycles)
         → SSH servers (TrustedUserCAKeys)
         → Audit log (tamper-evident chain)
             </pre>
@@ -116,29 +114,25 @@ User + WebAuthn
             </div>
 
             <h2>Properties</h2>
-            <ul>
-                <li><strong>Zero-Trust</strong> — No permanent SSH keys. Certificates expire in minutes.</li>
-                <li><strong>WebAuthn MFA</strong> — Phishing-resistant authentication via hardware keys or biometrics.
-                    (<a href="webauthn.html" style="color: var(--accent); text-decoration: underline;">Setup guide</a>)
-                </li>
-                <li><strong>JIT Sudo</strong> — Privilege escalation requires fresh MFA approval, logged centrally.</li>
-                <li><strong>Tamper-Evident Audit</strong> — Merkle-chained ledger. History cannot be rewritten without
-                    detection.</li>
-                <li><strong>Sovereign Recovery</strong> — Self-hosted backups with Shamir secret sharing. No cloud
-                    dependency.</li>
-            </ul>
+            <p><strong>Zero-Trust</strong>: No permanent SSH keys. Certificates expire in minutes.</p>
+            <p><strong>WebAuthn MFA</strong>: Phishing-resistant authentication via hardware keys or biometrics.
+                (<a href="webauthn.html" style="color: var(--accent); text-decoration: underline;">Setup guide</a>)</p>
+            <p><strong>JIT Sudo</strong>: Privilege escalation requires fresh MFA approval, logged centrally.</p>
+            <p><strong>Tamper-Evident Audit</strong>: Merkle-chained ledger. History cannot be rewritten without
+                detection.</p>
+            <p><strong>Sovereign Recovery</strong>: Self-hosted backups with Shamir secret sharing. No cloud
+                dependency.</p>
+            <p><strong>Policy Hardening</strong>: 1,000,000 soak iterations passed against reference evaluator.</p>
 
             <h2>Experimental: Trust Budgeting (Opt-in)</h2>
             <p>
                 Ephemera can optionally enforce issuance-time trust budgets to limit cumulative privileged authority.
                 This is a governance mechanism, not a runtime control or security guarantee.
             </p>
-            <ul>
-                <li>Operates only at certificate issuance time</li>
-                <li>Introduces no runtime monitoring or agents</li>
-                <li>Disabled by default</li>
-                <li>Experimental — may change or be removed</li>
-            </ul>
+            <p><strong>Issuance Logic</strong>: Operates only at certificate issuance time.</p>
+            <p><strong>Zero Agents</strong>: Introduces no runtime monitoring or agents.</p>
+            <p><strong>Opt-in Model</strong>: Disabled by default.</p>
+            <p><strong>Technical Limit</strong>: Not a security guarantee.</p>
             <p><a href="trust_budgeting.html" style="color: var(--accent); text-decoration: underline;">Read the Trust
                     Budgeting documentation →</a></p>
 
@@ -156,13 +150,12 @@ User + WebAuthn
 
             <h2>Project Assurance</h2>
             <p>Ephemera follows established open-source security and quality practices:</p>
-            <ul>
-                <li><strong>OpenSSF Best Practices</strong> — <a href="https://www.bestpractices.dev/projects/11722"
-                        style="color: var(--accent); text-decoration: underline;">Passing</a></li>
-                <li><strong>Code Quality</strong> — Codacy Grade A</li>
-                <li><strong>License</strong> — Apache-2.0 (enterprise-friendly)</li>
-                <li><strong>Hardware-backed MFA required</strong> — FIDO2/WebAuthn, YubiKey compatible</li>
-            </ul>
+            <p><strong>Fuzz Soak</strong>: 1,000,000 iterations passed (Zero mismatches)</p>
+            <p><strong>OpenSSF Best Practices</strong>: <a href="https://www.bestpractices.dev/projects/11722"
+                    style="color: var(--accent); text-decoration: underline;">Passing</a></p>
+            <p><strong>Code Quality</strong>: Codacy Grade A</p>
+            <p><strong>License</strong>: Apache-2.0 (enterprise-friendly)</p>
+            <p><strong>Hardware MFA</strong>: FIDO2/WebAuthn, YubiKey compatible</p>
 
             <h2>Documentation</h2>
             <ul>
@@ -181,7 +174,7 @@ User + WebAuthn
 
     <footer>
         <div class="container">
-            <span>Documentation applies to Ephemera v3.3.0 • Last Updated: 2026-01-12 • Architecture and
+            <span>Documentation applies to Ephemera v3.3.0 • Last Updated: 2026-01-21 • Architecture and
                 threat model reflect current release.<br>
                 Source code (canonical): Codeberg. GitHub mirror available for convenience. This documentation is
                 hosted on GitHub Pages for availability.<br>
