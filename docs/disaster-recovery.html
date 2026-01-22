@@ -1,155 +1,155 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
- :  : <meta charset="UTF-8">
- :  : <meta name="viewport" content="width=device-width, initial-scale=1.0">
- :  : <title>Disaster Recovery â€” Ephemera</title>
- :  : <meta name="description"
- :  :  :  : content="Ephemera disaster recovery: Shamir secret sharing for encrypted backups with k-of-n shard recovery.">
- :  : <link rel="preconnect" href="https://fonts.googleapis.com">
- :  : <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- :  : <link
- :  :  :  : href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
- :  :  :  : rel="stylesheet">
- :  : <link rel="stylesheet" href="styles.css">
- :  : <link rel="icon" type="image/png" href="assets/images/favicon.png">
- :  : <!-- Open Graph / Social Media -->
- :  : <meta property="og:site_name" content="Ephemera">
- :  : <meta property="og:title" content="Disaster Recovery â€” Ephemera">
- :  : <meta property="og:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
- :  : <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
- :  : <meta property="og:url" content="https://qarait.github.io/ephemera/disaster-recovery.html">
- :  : <!-- Twitter -->
- :  : <meta name="twitter:card" content="summary_large_image">
- :  : <meta name="twitter:title" content="Disaster Recovery â€” Ephemera">
- :  : <meta name="twitter:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
- :  : <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Recovery  :  Ephemera</title>
+    <meta name="description"
+        content="Ephemera disaster recovery: Shamir secret sharing for encrypted backups with k-of-n shard recovery.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:site_name" content="Ephemera">
+    <meta property="og:title" content="Disaster Recovery  :  Ephemera">
+    <meta property="og:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
+    <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta property="og:url" content="https://qarait.github.io/ephemera/disaster-recovery.html">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Disaster Recovery  :  Ephemera">
+    <meta name="twitter:description" content="Sovereign backup restoration using Shamir Secret Sharing.">
+    <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
 </head>
 
 <body>
- :  : <header>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <a href="index.html" class="logo">Ephemera</a>
- :  :  :  :  :  : <nav>
- :  :  :  :  :  :  :  : <a href="index.html">Home</a>
- :  :  :  :  :  :  :  : <a href="architecture.html">Architecture</a>
- :  :  :  :  :  :  :  : <a href="threat-model.html">Threat Model</a>
- :  :  :  :  :  :  :  : <a href="cli.html">CLI</a>
- :  :  :  :  :  :  :  : <a href="disaster-recovery.html" class="active">Recovery</a>
- :  :  :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
- :  :  :  :  :  : </nav>
- :  :  :  : </div>
- :  : </header>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="disaster-recovery.html" class="active">Recovery</a>
+                <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
+            </nav>
+        </div>
+    </header>
 
- :  : <main>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <h1>Disaster Recovery</h1>
- :  :  :  :  :  : <p class="lead">Sovereign backup with Shamir secret sharing. No cloud dependency.</p>
+    <main>
+        <div class="container">
+            <h1>Disaster Recovery</h1>
+            <p class="lead">Sovereign backup with Shamir secret sharing. No cloud dependency.</p>
 
- :  :  :  :  :  : <h2>Overview</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera encrypts critical data (CA keys, database) with a random password,
- :  :  :  :  :  :  :  : then splits that password into Shamir shards. No single person can restore
- :  :  :  :  :  :  :  : the backup, but a quorum can.
- :  :  :  :  :  : </p>
+            <h2>Overview</h2>
+            <p>
+                Ephemera encrypts critical data (CA keys, database) with a random password,
+                then splits that password into Shamir shards. No single person can restore
+                the backup, but a quorum can.
+            </p>
 
- :  :  :  :  :  : <h2>Create Backup</h2>
- :  :  :  :  :  : <p>Generate encrypted backup and split the password into shards:</p>
- :  :  :  :  :  : <pre><code>ephemera backup-create --k 3 --n 5 --out-dir ./backup</code></pre>
- :  :  :  :  :  : <p>This produces:</p>
- :  :  :  :  :  : <ul>
- :  :  :  :  :  :  :  : <li><code>ephemera_backup.enc</code> â€” The encrypted archive</li>
- :  :  :  :  :  :  :  : <li><code>backup_shard_1_of_5.json</code> through <code>backup_shard_5_of_5.json</code> â€” Password
- :  :  :  :  :  :  :  :  :  : shards</li>
- :  :  :  :  :  : </ul>
+            <h2>Create Backup</h2>
+            <p>Generate encrypted backup and split the password into shards:</p>
+            <pre><code>ephemera backup-create --k 3 --n 5 --out-dir ./backup</code></pre>
+            <p>This produces:</p>
+            <ul>
+                <li><code>ephemera_backup.enc</code>  :  The encrypted archive</li>
+                <li><code>backup_shard_1_of_5.json</code> through <code>backup_shard_5_of_5.json</code>  :  Password
+                    shards</li>
+            </ul>
 
- :  :  :  :  :  : <div class="note warning">
- :  :  :  :  :  :  :  : <div class="note-title">Shard Distribution</div>
- :  :  :  :  :  :  :  : Store each shard in a separate, secure location with different custodians.
- :  :  :  :  :  :  :  : The encrypted backup file is useless without the required number of shards.
- :  :  :  :  :  : </div>
+            <div class="note warning">
+                <div class="note-title">Shard Distribution</div>
+                Store each shard in a separate, secure location with different custodians.
+                The encrypted backup file is useless without the required number of shards.
+            </div>
 
- :  :  :  :  :  : <h2>Restore Backup</h2>
- :  :  :  :  :  : <p>Restore using the encrypted file and any k shards:</p>
- :  :  :  :  :  : <pre><code>ephemera backup-restore \
- : --backup ./backup/ephemera_backup.enc \
- : --shards ./backup/backup_shard_1_of_5.json \
- :  :  :  :  :  ./backup/backup_shard_2_of_5.json \
- :  :  :  :  :  ./backup/backup_shard_4_of_5.json \
- : --out-dir ./restored</code></pre>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : In this example, 3-of-5 shards are required. Any 3 shards can reconstruct
- :  :  :  :  :  :  :  : the password. The specific shard numbers do not matter.
- :  :  :  :  :  : </p>
+            <h2>Restore Backup</h2>
+            <p>Restore using the encrypted file and any k shards:</p>
+            <pre><code>ephemera backup-restore \
+  --backup ./backup/ephemera_backup.enc \
+  --shards ./backup/backup_shard_1_of_5.json \
+           ./backup/backup_shard_2_of_5.json \
+           ./backup/backup_shard_4_of_5.json \
+  --out-dir ./restored</code></pre>
+            <p>
+                In this example, 3-of-5 shards are required. Any 3 shards can reconstruct
+                the password. The specific shard numbers do not matter.
+            </p>
 
- :  :  :  :  :  : <h2>Parameters</h2>
- :  :  :  :  :  : <div class="table-container">
- :  :  :  :  :  :  :  : <table>
- :  :  :  :  :  :  :  :  :  : <thead>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <th>Parameter</th>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <th>Description</th>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  : </thead>
- :  :  :  :  :  :  :  :  :  : <tbody>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td><code>--k</code></td>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td>Threshold: minimum shards required to restore</td>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td><code>--n</code></td>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td>Total number of shards to generate</td>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td><code>--out-dir</code></td>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td>Directory for output files</td>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td><code>--backup</code></td>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td>Path to encrypted backup file (restore only)</td>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  :  :  : <tr>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td><code>--shards</code></td>
- :  :  :  :  :  :  :  :  :  :  :  :  :  : <td>Paths to shard files (restore only)</td>
- :  :  :  :  :  :  :  :  :  :  :  : </tr>
- :  :  :  :  :  :  :  :  :  : </tbody>
- :  :  :  :  :  :  :  : </table>
- :  :  :  :  :  : </div>
+            <h2>Parameters</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>--k</code></td>
+                            <td>Threshold: minimum shards required to restore</td>
+                        </tr>
+                        <tr>
+                            <td><code>--n</code></td>
+                            <td>Total number of shards to generate</td>
+                        </tr>
+                        <tr>
+                            <td><code>--out-dir</code></td>
+                            <td>Directory for output files</td>
+                        </tr>
+                        <tr>
+                            <td><code>--backup</code></td>
+                            <td>Path to encrypted backup file (restore only)</td>
+                        </tr>
+                        <tr>
+                            <td><code>--shards</code></td>
+                            <td>Paths to shard files (restore only)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
- :  :  :  :  :  : <h2>Security Properties</h2>
- :  :  :  :  :  : <ul>
- :  :  :  :  :  :  :  : <li>Backup is encrypted with AES-256-GCM.</li>
- :  :  :  :  :  :  :  : <li>Password is never stored; only shards exist.</li>
- :  :  :  :  :  :  :  : <li>Shards are portable JSON files (no QR codes).</li>
- :  :  :  :  :  :  :  : <li>Air-gap compatible: no network required for recovery.</li>
- :  :  :  :  :  : </ul>
+            <h2>Security Properties</h2>
+            <ul>
+                <li>Backup is encrypted with AES-256-GCM.</li>
+                <li>Password is never stored; only shards exist.</li>
+                <li>Shards are portable JSON files (no QR codes).</li>
+                <li>Air-gap compatible: no network required for recovery.</li>
+            </ul>
 
- :  :  :  :  :  : <h2>CA Key Rotation</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera supports zero-downtime CA key rotation. Old keys remain trusted
- :  :  :  :  :  :  :  : during the transition period:
- :  :  :  :  :  : </p>
- :  :  :  :  :  : <pre><code>ephemera rotate-ca</code></pre>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : The rotation lifecycle maintains active, previous, and next keys.
- :  :  :  :  :  :  :  : Existing certificates remain valid until expiry.
- :  :  :  :  :  : </p>
- :  :  :  : </div>
- :  : </main>
+            <h2>CA Key Rotation</h2>
+            <p>
+                Ephemera supports zero-downtime CA key rotation. Old keys remain trusted
+                during the transition period:
+            </p>
+            <pre><code>ephemera rotate-ca</code></pre>
+            <p>
+                The rotation lifecycle maintains active, previous, and next keys.
+                Existing certificates remain valid until expiry.
+            </p>
+        </div>
+    </main>
 
- :  : <footer>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <span>Documentation applies to Ephemera v3.3.0 â€¢ Last Updated: 2026-01-21 â€¢ Source code (canonical):
- :  :  :  :  :  :  :  : Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
- :  :  :  :  :  :  :  : availability.<br>
- :  :  :  :  :  :  :  : <strong>Threat model and security assumptions are documented <a
- :  :  :  :  :  :  :  :  :  :  :  : href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
- :  :  :  :  :  :  :  :  :  :  :  : style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
- :  :  :  :  :  :  :  :  :  : welcome.</strong></span>
- :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
- :  :  :  : </div>
- :  : </footer>
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.3.0  -  Last Updated: 2026-01-21  -  Source code (canonical):
+                Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
+                availability.<br>
+                <strong>Threat model and security assumptions are documented <a
+                        href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
+                        style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
+                    welcome.</strong></span>
+            <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
+        </div>
+    </footer>
 </body>
 
 </html>

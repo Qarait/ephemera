@@ -1,184 +1,176 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
- :  : <meta charset="UTF-8">
- :  : <meta name="viewport" content="width=device-width, initial-scale=1.0">
- :  : <title>Ephemera â€” A Zero-Trust SSH Certificate Authority</title>
- :  : <meta name="description"
- :  :  :  : content="Ephemera is a sovereign, air-gapped SSH Certificate Authority that enforces Zero Trust principles. Short-lived certificates, WebAuthn MFA, tamper-proof audit.">
- :  : <link rel="preconnect" href="https://fonts.googleapis.com">
- :  : <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- :  : <link
- :  :  :  : href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
- :  :  :  : rel="stylesheet">
- :  : <link rel="stylesheet" href="styles.css">
- :  : <link rel="icon" type="image/png" href="assets/images/favicon.png">
- :  : <!-- Open Graph / Social Media -->
- :  : <meta property="og:type" content="website">
- :  : <meta property="og:site_name" content="Ephemera">
- :  : <meta property="og:title" content="Ephemera â€” A Zero-Trust SSH Certificate Authority">
- :  : <meta property="og:description"
- :  :  :  : content="A self-hosted, zero-trust SSH certificate authority using short-lived certificates, WebAuthn MFA, explicit RBAC, and documented threat models.">
- :  : <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
- :  : <meta property="og:url" content="https://qarait.github.io/ephemera/">
- :  : <!-- Twitter -->
- :  : <meta name="twitter:card" content="summary_large_image">
- :  : <meta name="twitter:title" content="Ephemera â€” A Zero-Trust SSH Certificate Authority">
- :  : <meta name="twitter:description"
- :  :  :  : content="A self-hosted, zero-trust SSH certificate authority using short-lived certificates, WebAuthn MFA, explicit RBAC, and documented threat models.">
- :  : <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ephemera  :  A Zero-Trust SSH Certificate Authority</title>
+    <meta name="description"
+        content="Ephemera is a sovereign, air-gapped SSH Certificate Authority that enforces Zero Trust principles. Short-lived certificates, WebAuthn MFA, tamper-proof audit.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Ephemera">
+    <meta property="og:title" content="Ephemera  :  A Zero-Trust SSH Certificate Authority">
+    <meta property="og:description"
+        content="A self-hosted, zero-trust SSH certificate authority using short-lived certificates, WebAuthn MFA, explicit RBAC, and documented threat models.">
+    <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta property="og:url" content="https://qarait.github.io/ephemera/">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ephemera  :  A Zero-Trust SSH Certificate Authority">
+    <meta name="twitter:description"
+        content="A self-hosted, zero-trust SSH certificate authority using short-lived certificates, WebAuthn MFA, explicit RBAC, and documented threat models.">
+    <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
 </head>
 
 <body>
- :  : <header>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <a href="index.html" class="logo">Ephemera</a>
- :  :  :  :  :  : <nav>
- :  :  :  :  :  :  :  : <a href="index.html" class="active">Home</a>
- :  :  :  :  :  :  :  : <a href="architecture.html">Architecture</a>
- :  :  :  :  :  :  :  : <a href="threat-model.html">Threat Model</a>
- :  :  :  :  :  :  :  : <a href="cli.html">CLI</a>
- :  :  :  :  :  :  :  : <a href="disaster-recovery.html">Recovery</a>
- :  :  :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
- :  :  :  :  :  : </nav>
- :  :  :  : </div>
- :  : </header>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html" class="active">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+                <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
+            </nav>
+        </div>
+    </header>
 
- :  : <main>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <h1>Ephemera</h1>
- :  :  :  :  :  : <p class="lead">A Zero-Trust SSH Certificate Authority</p>
+    <main>
+        <div class="container">
+            <h1>Ephemera</h1>
+            <p class="lead">A Zero-Trust SSH Certificate Authority</p>
 
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera is a sovereign, air-gapped SSH Certificate Authority designed to replace
- :  :  :  :  :  :  :  : static keys with short-lived, identity-bound certificates. No long-lived private
- :  :  :  :  :  :  :  : keys on user devices. Certificates are issued just-in-time and expire automatically.
- :  :  :  :  :  : </p>
+            <p>
+                Ephemera is a sovereign, air-gapped SSH Certificate Authority designed to replace
+                static keys with short-lived, identity-bound certificates. No long-lived private
+                keys on user devices. Certificates are issued just-in-time and expire automatically.
+            </p>
 
- :  :  :  :  :  : <h2>What Ephemera Is</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera is a self-hosted SSH Certificate Authority built on native OpenSSH features.
- :  :  :  :  :  :  :  : It replaces long-lived SSH keys with short-lived certificates issued just-in-time,
- :  :  :  :  :  :  :  : with explicit physical presence and auditable privilege escalation.
- :  :  :  :  :  : </p>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : It is designed for teams that want centralized SSH governance without
- :  :  :  :  :  :  :  : MITM proxies, custom protocols, or cloud dependencies.
- :  :  :  :  :  : </p>
+            <h2>What Ephemera Is</h2>
+            <p>
+                Ephemera is a self-hosted SSH Certificate Authority built on native OpenSSH features.
+                It replaces long-lived SSH keys with short-lived certificates issued just-in-time,
+                with explicit physical presence and auditable privilege escalation.
+            </p>
+            <p>
+                It is designed for teams that want centralized SSH governance without
+                MITM proxies, custom protocols, or cloud dependencies.
+            </p>
 
- :  :  :  :  :  : <h2>What Ephemera Is Not</h2>
- :  :  :  :  :  : <p><strong>Not an SSH proxy or MITM gateway</strong> : Ephemera is not a shim or gateway. It operates solely
- :  :  :  :  :  :  :  : at the certificate issuance and policy level.</p>
- :  :  :  :  :  : <p><strong>Not a PAM replacement</strong> : While it integrates with PAM for sudo approval, it does not
- :  :  :  :  :  :  :  : replace the system's underlying authentication modules.</p>
- :  :  :  :  :  : <p><strong>Not a runtime monitoring tool</strong> : It does not monitor active SSH sessions or network
- :  :  :  :  :  :  :  : traffic.</p>
- :  :  :  :  :  : <p><strong>Not a cloud service</strong> : Ephemera is exclusively self-hosted for maximum sovereignty.</p>
- :  :  :  :  :  : <p><strong>Not a SIEM</strong> : It is a CA with audit capabilities, not a security information and event
- :  :  :  :  :  :  :  : management platform.</p>
+            <h2>What Ephemera Is Not</h2>
+            <p><strong>Not an SSH proxy or MITM gateway</strong> : Ephemera is not a shim or gateway. It operates solely at the certificate issuance and policy level.</p>
+            <p><strong>Not a PAM replacement</strong> : While it integrates with PAM for sudo approval, it does not replace the system's underlying authentication modules.</p>
+            <p><strong>Not a runtime monitoring tool</strong> : It does not monitor active SSH sessions or network traffic.</p>
+            <p><strong>Not a cloud service</strong> : Ephemera is exclusively self-hosted for maximum sovereignty.</p>
+            <p><strong>Not a SIEM</strong> : It is a CA with audit capabilities, not a security information and event management platform.</p>
 
- :  :  :  :  :  : <h2>Why Ephemera?</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Traditional SSH relies on long-lived private keys spread across laptops and servers.
- :  :  :  :  :  :  :  : Once a key leaks, access persists until you discover it and rotate keys everywhere.
- :  :  :  :  :  :  :  : Ephemera replaces static keys with short-lived certificates that expire automatically,
- :  :  :  :  :  :  :  : shrinking the window of misuse from months to minutes.
- :  :  :  :  :  : </p>
+            <h2>Why Ephemera?</h2>
+            <p>
+                Traditional SSH relies on long-lived private keys spread across laptops and servers.
+                Once a key leaks, access persists until you discover it and rotate keys everywhere.
+                Ephemera replaces static keys with short-lived certificates that expire automatically,
+                shrinking the window of misuse from months to minutes.
+            </p>
 
- :  :  :  :  :  : <h2>Status</h2>
- :  :  :  :  :  : <p><strong>Core SSH CA</strong> : Production ready (v3.3.0)</p>
- :  :  :  :  :  : <p><strong>Fuzz Soak</strong> : 1,000,000 internal iterations passed (0 mismatches)</p>
- :  :  :  :  :  : <p><strong>OpenSSF Best Practices</strong> : <a href="https://www.bestpractices.dev/projects/11722"
- :  :  :  :  :  :  :  :  :  : style="color: var(--accent); text-decoration: underline;">Passing</a></p>
+            <h2>Status</h2>
+            <p><strong>Core SSH CA</strong> : Production ready (v3.3.0)</p>
+            <p><strong>Fuzz Soak</strong> : 1,000,000 internal iterations passed (0 mismatches)</p>
+            <p><strong>OpenSSF Best Practices</strong> : <a href="https://www.bestpractices.dev/projects/11722" style="color: var(--accent); text-decoration: underline;">Passing</a></p>
 
- :  :  :  :  :  : <h2>Architecture</h2>
- :  :  :  :  :  : <pre
- :  :  :  :  :  :  :  : style="background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+            <h2>Architecture</h2>
+            <pre
+                style="background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
 User + WebAuthn
- :  : â†’ Ephemera CA (policy, signing, ledger)
- :  :  :  : â†’ SSH servers (TrustedUserCAKeys)
- :  :  :  : â†’ Audit log (tamper-evident chain)
- :  :  :  :  :  : </pre>
- :  :  :  :  :  : <p><a href="architecture.html" style="color: var(--accent); text-decoration: underline;">Full architecture
- :  :  :  :  :  :  :  :  :  : documentation â†’</a></p>
+    → Ephemera CA (policy, signing, ledger)
+        → SSH servers (TrustedUserCAKeys)
+        → Audit log (tamper-evident chain)
+            </pre>
+            <p><a href="architecture.html" style="color: var(--accent); text-decoration: underline;">Full architecture
+                    documentation →</a></p>
 
- :  :  :  :  :  : <div class="flow">
- :  :  :  :  :  :  :  : <span>User</span>
- :  :  :  :  :  :  :  : <span class="flow-arrow">â†’</span>
- :  :  :  :  :  :  :  : <span>WebAuthn</span>
- :  :  :  :  :  :  :  : <span class="flow-arrow">â†’</span>
- :  :  :  :  :  :  :  : <span>Short-lived cert</span>
- :  :  :  :  :  :  :  : <span class="flow-arrow">â†’</span>
- :  :  :  :  :  :  :  : <span>SSH</span>
- :  :  :  :  :  :  :  : <span class="flow-arrow">â†’</span>
- :  :  :  :  :  :  :  : <span>Logged sudo</span>
- :  :  :  :  :  : </div>
+            <div class="flow">
+                <span>User</span>
+                <span class="flow-arrow">→</span>
+                <span>WebAuthn</span>
+                <span class="flow-arrow">→</span>
+                <span>Short-lived cert</span>
+                <span class="flow-arrow">→</span>
+                <span>SSH</span>
+                <span class="flow-arrow">→</span>
+                <span>Logged sudo</span>
+            </div>
 
- :  :  :  :  :  : <h2>Properties</h2>
- :  :  :  :  :  : <p><strong>Zero-Trust</strong> : No permanent SSH keys. Certificates expire in minutes.</p>
- :  :  :  :  :  : <p><strong>WebAuthn MFA</strong> : Phishing-resistant authentication via hardware keys or biometrics. (<a
- :  :  :  :  :  :  :  :  :  : href="webauthn.html" style="color: var(--accent); text-decoration: underline;">Setup guide</a>)</p>
- :  :  :  :  :  : <p><strong>JIT Sudo</strong> : Privilege escalation requires fresh MFA approval, logged centrally.</p>
- :  :  :  :  :  : <p><strong>Tamper-Evident Audit</strong> : Merkle-chained ledger. History cannot be rewritten without
- :  :  :  :  :  :  :  : detection.</p>
- :  :  :  :  :  : <p><strong>Sovereign Recovery</strong> : Self-hosted backups with Shamir secret sharing. No cloud
- :  :  :  :  :  :  :  : dependency.</p>
+            <h2>Properties</h2>
+            <p><strong>Zero-Trust</strong> : No permanent SSH keys. Certificates expire in minutes.</p>
+            <p><strong>WebAuthn MFA</strong> : Phishing-resistant authentication via hardware keys or biometrics. (<a href="webauthn.html" style="color: var(--accent); text-decoration: underline;">Setup guide</a>)</p>
+            <p><strong>JIT Sudo</strong> : Privilege escalation requires fresh MFA approval, logged centrally.</p>
+            <p><strong>Tamper-Evident Audit</strong> : Merkle-chained ledger. History cannot be rewritten without detection.</p>
+            <p><strong>Sovereign Recovery</strong> : Self-hosted backups with Shamir secret sharing. No cloud dependency.</p>
 
- :  :  :  :  :  : <h2>Experimental: Trust Budgeting (Opt-in)</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera can optionally enforce issuance-time trust budgets to limit cumulative privileged authority.
- :  :  :  :  :  :  :  : This is a governance mechanism, not a runtime control or security guarantee.
- :  :  :  :  :  : </p>
- :  :  :  :  :  : <ul>
- :  :  :  :  :  :  :  : <li>Operates only at certificate issuance time</li>
- :  :  :  :  :  :  :  : <li>Introduces no runtime monitoring or agents</li>
- :  :  :  :  :  :  :  : <li>Disabled by default</li>
- :  :  :  :  :  :  :  : <li>Experimental â€” may change or be removed</li>
- :  :  :  :  :  : </ul>
- :  :  :  :  :  : <p><a href="trust_budgeting.html" style="color: var(--accent); text-decoration: underline;">Read the Trust
- :  :  :  :  :  :  :  :  :  : Budgeting documentation â†’</a></p>
+            <h2>Experimental: Trust Budgeting (Opt-in)</h2>
+            <p>
+                Ephemera can optionally enforce issuance-time trust budgets to limit cumulative privileged authority.
+                This is a governance mechanism, not a runtime control or security guarantee.
+            </p>
+            <ul>
+                <li>Operates only at certificate issuance time</li>
+                <li>Introduces no runtime monitoring or agents</li>
+                <li>Disabled by default</li>
+                <li>Experimental  :  may change or be removed</li>
+            </ul>
+            <p><a href="trust_budgeting.html" style="color: var(--accent); text-decoration: underline;">Read the Trust
+                    Budgeting documentation →</a></p>
 
- :  :  :  :  :  : <h2>Get Started</h2>
- :  :  :  :  :  : <ol>
- :  :  :  :  :  :  :  : <li><a href="threat-model.html" style="color: var(--accent); text-decoration: underline;">Read Threat
- :  :  :  :  :  :  :  :  :  :  :  : Model</a> â€” Security assumptions and non-goals</li>
- :  :  :  :  :  :  :  : <li><a href="architecture.html" style="color: var(--accent); text-decoration: underline;">Review
- :  :  :  :  :  :  :  :  :  :  :  : Architecture</a> â€” Components and trust zones</li>
- :  :  :  :  :  :  :  : <li><a href="cli.html" style="color: var(--accent); text-decoration: underline;">Try CLI Workflow</a> â€”
- :  :  :  :  :  :  :  :  :  : Local deploy and first certificate</li>
- :  :  :  :  :  :  :  : <li><a href="trust_budgeting.html" style="color: var(--accent); text-decoration: underline;">Explore
- :  :  :  :  :  :  :  :  :  :  :  : Trust Budgeting</a> â€” Governance primitive (experimental)</li>
- :  :  :  :  :  : </ol>
+            <h2>Get Started</h2>
+            <ol>
+                <li><a href="threat-model.html" style="color: var(--accent); text-decoration: underline;">Read Threat
+                        Model</a>  :  Security assumptions and non-goals</li>
+                <li><a href="architecture.html" style="color: var(--accent); text-decoration: underline;">Review
+                        Architecture</a>  :  Components and trust zones</li>
+                <li><a href="cli.html" style="color: var(--accent); text-decoration: underline;">Try CLI Workflow</a>  : 
+                    Local deploy and first certificate</li>
+                <li><a href="trust_budgeting.html" style="color: var(--accent); text-decoration: underline;">Explore
+                        Trust Budgeting</a>  :  Governance primitive (experimental)</li>
+            </ol>
 
- :  :  :  :  :  : <h2>Documentation</h2>
- :  :  :  :  :  : <ul>
- :  :  :  :  :  :  :  : <li><a href="architecture.html">Architecture</a> â€” Components and trust zones</li>
- :  :  :  :  :  :  :  : <li><a href="threat-model.html">Threat Model</a> â€” Non-goals and accepted risks</li>
- :  :  :  :  :  :  :  : <li><a href="cli.html">CLI Workflow</a> â€” Commands and configuration</li>
- :  :  :  :  :  :  :  : <li><a href="disaster-recovery.html">Disaster Recovery</a> â€” Backup and restore procedures</li>
- :  :  :  :  :  : </ul>
+            <h2>Documentation</h2>
+            <ul>
+                <li><a href="architecture.html">Architecture</a>  :  Components and trust zones</li>
+                <li><a href="threat-model.html">Threat Model</a>  :  Non-goals and accepted risks</li>
+                <li><a href="cli.html">CLI Workflow</a>  :  Commands and configuration</li>
+                <li><a href="disaster-recovery.html">Disaster Recovery</a>  :  Backup and restore procedures</li>
+            </ul>
 
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Ephemera is open source under the Apache 2.0 license.<br>
- :  :  :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera">codeberg.org/Qarait/ephemera</a>
- :  :  :  :  :  : </p>
- :  :  :  : </div>
- :  : </main>
+            <p>
+                Ephemera is open source under the Apache 2.0 license.<br>
+                <a href="https://codeberg.org/Qarait/ephemera">codeberg.org/Qarait/ephemera</a>
+            </p>
+        </div>
+    </main>
 
- :  : <footer>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <span>Documentation applies to Ephemera v3.3.0 â€¢ Last Updated: 2026-01-21 â€¢ Architecture and
- :  :  :  :  :  :  :  : threat model reflect current release.<br>
- :  :  :  :  :  :  :  : Source code (canonical): Codeberg. GitHub mirror available for convenience. This documentation is
- :  :  :  :  :  :  :  : hosted on GitHub Pages for availability.<br>
- :  :  :  :  :  :  :  : <strong>Threat model and security assumptions are documented <a
- :  :  :  :  :  :  :  :  :  :  :  : href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
- :  :  :  :  :  :  :  :  :  :  :  : style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
- :  :  :  :  :  :  :  :  :  : welcome.</strong></span>
- :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
- :  :  :  : </div>
- :  : </footer>
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.3.0  -  Last Updated: 2026-01-21  -  Architecture and
+                threat model reflect current release.<br>
+                Source code (canonical): Codeberg. GitHub mirror available for convenience. This documentation is
+                hosted on GitHub Pages for availability.<br>
+                <strong>Threat model and security assumptions are documented <a
+                        href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
+                        style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
+                    welcome.</strong></span>
+            <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
+        </div>
+    </footer>
 </body>
 
 </html>

@@ -1,148 +1,148 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
- :  : <meta charset="UTF-8">
- :  : <meta name="viewport" content="width=device-width, initial-scale=1.0">
- :  : <title>CLI Workflow : Ephemera</title>
- :  : <meta name="description" content="Ephemera CLI commands: init, login, renew, status, and policy configuration.">
- :  : <link rel="preconnect" href="https://fonts.googleapis.com">
- :  : <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- :  : <link
- :  :  :  : href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
- :  :  :  : rel="stylesheet">
- :  : <link rel="stylesheet" href="styles.css">
- :  : <link rel="icon" type="image/png" href="assets/images/favicon.png">
- :  : <!-- Open Graph / Social Media -->
- :  : <meta property="og:site_name" content="Ephemera">
- :  : <meta property="og:title" content="CLI Workflow : Ephemera">
- :  : <meta property="og:description" content="Commands and configuration for ephemeral SSH authentication.">
- :  : <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
- :  : <meta property="og:url" content="https://qarait.github.io/ephemera/cli.html">
- :  : <!-- Twitter -->
- :  : <meta name="twitter:card" content="summary_large_image">
- :  : <meta name="twitter:title" content="CLI Workflow : Ephemera">
- :  : <meta name="twitter:description" content="Commands and configuration for ephemeral SSH authentication.">
- :  : <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Workflow  :  Ephemera</title>
+    <meta name="description" content="Ephemera CLI commands: init, login, renew, status, and policy configuration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:site_name" content="Ephemera">
+    <meta property="og:title" content="CLI Workflow  :  Ephemera">
+    <meta property="og:description" content="Commands and configuration for ephemeral SSH authentication.">
+    <meta property="og:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
+    <meta property="og:url" content="https://qarait.github.io/ephemera/cli.html">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CLI Workflow  :  Ephemera">
+    <meta name="twitter:description" content="Commands and configuration for ephemeral SSH authentication.">
+    <meta name="twitter:image" content="https://qarait.github.io/ephemera/assets/images/ephemera_card.png">
 </head>
 
 <body>
- :  : <header>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <a href="index.html" class="logo">Ephemera</a>
- :  :  :  :  :  : <nav>
- :  :  :  :  :  :  :  : <a href="index.html">Home</a>
- :  :  :  :  :  :  :  : <a href="architecture.html">Architecture</a>
- :  :  :  :  :  :  :  : <a href="threat-model.html">Threat Model</a>
- :  :  :  :  :  :  :  : <a href="cli.html" class="active">CLI</a>
- :  :  :  :  :  :  :  : <a href="disaster-recovery.html">Recovery</a>
- :  :  :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
- :  :  :  :  :  : </nav>
- :  :  :  : </div>
- :  : </header>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Ephemera</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="threat-model.html">Threat Model</a>
+                <a href="cli.html" class="active">CLI</a>
+                <a href="disaster-recovery.html">Recovery</a>
+                <a href="https://codeberg.org/Qarait/ephemera" class="repo-btn">Repository (Codeberg)</a>
+            </nav>
+        </div>
+    </header>
 
- :  : <main>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <h1>CLI Workflow</h1>
- :  :  :  :  :  : <p class="lead">Commands for authentication, certificate renewal, and status.</p>
+    <main>
+        <div class="container">
+            <h1>CLI Workflow</h1>
+            <p class="lead">Commands for authentication, certificate renewal, and status.</p>
 
- :  :  :  :  :  : <h2>Installation</h2>
- :  :  :  :  :  : <pre><code>pip install ephemera-cli</code></pre>
+            <h2>Installation</h2>
+            <pre><code>pip install ephemera-cli</code></pre>
 
- :  :  :  :  :  : <h2>Setup</h2>
- :  :  :  :  :  : <p>Initialize your SSH configuration to use Ephemera:</p>
- :  :  :  :  :  : <pre><code>ephemera init</code></pre>
- :  :  :  :  :  : <p>This configures your <code>~/.ssh/config</code> to use certificates from the CA.</p>
+            <h2>Setup</h2>
+            <p>Initialize your SSH configuration to use Ephemera:</p>
+            <pre><code>ephemera init</code></pre>
+            <p>This configures your <code>~/.ssh/config</code> to use certificates from the CA.</p>
 
- :  :  :  :  :  : <h2>Authentication</h2>
- :  :  :  :  :  : <p>Login to the CA server:</p>
- :  :  :  :  :  : <pre><code>ephemera login</code></pre>
- :  :  :  :  :  : <p>You will be prompted for WebAuthn (hardware key) or TOTP verification.</p>
+            <h2>Authentication</h2>
+            <p>Login to the CA server:</p>
+            <pre><code>ephemera login</code></pre>
+            <p>You will be prompted for WebAuthn (hardware key) or TOTP verification.</p>
 
- :  :  :  :  :  : <h2>YubiKey / WebAuthn Setup</h2>
- :  :  :  :  :  : <div class="note">
- :  :  :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  :  :  : <em>Ephemera uses WebAuthn-compatible hardware keys (such as YubiKey) to enforce physical presence
- :  :  :  :  :  :  :  :  :  :  :  : for SSH certificate issuance and sudo approval. Technical details are available in the <a
- :  :  :  :  :  :  :  :  :  :  :  :  :  : href="webauthn.html" style="color: var(--accent); text-decoration: underline;">WebAuthn
- :  :  :  :  :  :  :  :  :  :  :  :  :  : Guide</a>.</em>
- :  :  :  :  :  :  :  : </p>
- :  :  :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  :  :  : <strong>1. Run authentication</strong> â€” Run <code>ephemera login</code>.<br>
- :  :  :  :  :  :  :  :  :  : <strong>2. Hardware Verification</strong> â€” When prompted, insert and touch your YubiKey.<br>
- :  :  :  :  :  :  :  :  :  : <strong>3. Binding</strong> â€” The credential is registered and cryptographically bound to your
- :  :  :  :  :  :  :  :  :  : account.<br>
- :  :  :  :  :  :  :  :  :  : <strong>4. Access</strong> â€” Future SSH renewals and sudo approvals require physical presence.
- :  :  :  :  :  :  :  : </p>
- :  :  :  :  :  : </div>
+            <h2>YubiKey / WebAuthn Setup</h2>
+            <div class="note">
+                <p>
+                    <em>Ephemera uses WebAuthn-compatible hardware keys (such as YubiKey) to enforce physical presence
+                        for SSH certificate issuance and sudo approval. Technical details are available in the <a
+                            href="webauthn.html" style="color: var(--accent); text-decoration: underline;">WebAuthn
+                            Guide</a>.</em>
+                </p>
+                <p>
+                    <strong>1. Run authentication</strong>  :  Run <code>ephemera login</code>.<br>
+                    <strong>2. Hardware Verification</strong>  :  When prompted, insert and touch your YubiKey.<br>
+                    <strong>3. Binding</strong>  :  The credential is registered and cryptographically bound to your
+                    account.<br>
+                    <strong>4. Access</strong>  :  Future SSH renewals and sudo approvals require physical presence.
+                </p>
+            </div>
 
- :  :  :  :  :  : <h2>Certificate Renewal</h2>
- :  :  :  :  :  : <p>Request a new short-lived certificate:</p>
- :  :  :  :  :  : <pre><code>ephemera renew</code></pre>
- :  :  :  :  :  : <p>Certificates expire in 5 minutes by default. Renewal requires fresh MFA.</p>
+            <h2>Certificate Renewal</h2>
+            <p>Request a new short-lived certificate:</p>
+            <pre><code>ephemera renew</code></pre>
+            <p>Certificates expire in 5 minutes by default. Renewal requires fresh MFA.</p>
 
- :  :  :  :  :  : <h2>Status</h2>
- :  :  :  :  :  : <p>Check current certificate and sudo state:</p>
- :  :  :  :  :  : <pre><code>ephemera status</code></pre>
- :  :  :  :  :  : <p>Shows certificate expiry, current user, and JIT sudo availability.</p>
+            <h2>Status</h2>
+            <p>Check current certificate and sudo state:</p>
+            <pre><code>ephemera status</code></pre>
+            <p>Shows certificate expiry, current user, and JIT sudo availability.</p>
 
- :  :  :  :  :  : <h2>Sudo History</h2>
- :  :  :  :  :  : <p>View privilege escalation events:</p>
- :  :  :  :  :  : <pre><code>ephemera sudo-history</code></pre>
+            <h2>Sudo History</h2>
+            <p>View privilege escalation events:</p>
+            <pre><code>ephemera sudo-history</code></pre>
 
- :  :  :  :  :  : <h2>Policy Configuration</h2>
- :  :  :  :  :  : <p>
- :  :  :  :  :  :  :  : Access control is managed through <code>policy.yaml</code>.
- :  :  :  :  :  :  :  : Example configuration:
- :  :  :  :  :  : </p>
- :  :  :  :  :  : <pre><code># Define Roles
+            <h2>Policy Configuration</h2>
+            <p>
+                Access control is managed through <code>policy.yaml</code>.
+                Example configuration:
+            </p>
+            <pre><code># Define Roles
 roles:
- : developer:
- :  : can_request_cert: true
- :  : max_cert_duration: 300 : # 5 minutes
- :  : allowed_principals: ["dev-user"]
- :  : 
- : admin:
- :  : can_request_cert: true
- :  : max_cert_duration: 3600 # 1 hour
- :  : allowed_principals: ["root", "admin"]
- :  : can_approve_sudo: true
+  developer:
+    can_request_cert: true
+    max_cert_duration: 300  # 5 minutes
+    allowed_principals: ["dev-user"]
+    
+  admin:
+    can_request_cert: true
+    max_cert_duration: 3600 # 1 hour
+    allowed_principals: ["root", "admin"]
+    can_approve_sudo: true
 
 # Define Rules
 rules:
- : # Developers can only access dev servers
- : - role: developer
- :  : resource: "dev-*"
- :  : action: "ssh"
- :  : effect: allow
+  # Developers can only access dev servers
+  - role: developer
+    resource: "dev-*"
+    action: "ssh"
+    effect: allow
 
- : # Admins can access everything with MFA
- : - role: admin
- :  : resource: "*"
- :  : action: "ssh"
- :  : effect: allow
- :  : conditions:
- :  :  : mfa_required: true</code></pre>
+  # Admins can access everything with MFA
+  - role: admin
+    resource: "*"
+    action: "ssh"
+    effect: allow
+    conditions:
+      mfa_required: true</code></pre>
 
- :  :  :  :  :  : <h2>Connect</h2>
- :  :  :  :  :  : <p>After renewal, connect normally:</p>
- :  :  :  :  :  : <pre><code>ssh user@your-server</code></pre>
- :  :  :  :  :  : <p>OpenSSH uses the certificate automatically. No key file management required.</p>
- :  :  :  : </div>
- :  : </main>
+            <h2>Connect</h2>
+            <p>After renewal, connect normally:</p>
+            <pre><code>ssh user@your-server</code></pre>
+            <p>OpenSSH uses the certificate automatically. No key file management required.</p>
+        </div>
+    </main>
 
- :  : <footer>
- :  :  :  : <div class="container">
- :  :  :  :  :  : <span>Documentation applies to Ephemera v3.3.0 â€¢ Last Updated: 2026-01-21 â€¢ Source code (canonical):
- :  :  :  :  :  :  :  : Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
- :  :  :  :  :  :  :  : availability.<br>
- :  :  :  :  :  :  :  : <strong>Threat model and security assumptions are documented <a
- :  :  :  :  :  :  :  :  :  :  :  : href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
- :  :  :  :  :  :  :  :  :  :  :  : style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
- :  :  :  :  :  :  :  :  :  : welcome.</strong></span>
- :  :  :  :  :  : <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
- :  :  :  : </div>
- :  : </footer>
+    <footer>
+        <div class="container">
+            <span>Documentation applies to Ephemera v3.3.0  -  Last Updated: 2026-01-21  -  Source code (canonical):
+                Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
+                availability.<br>
+                <strong>Threat model and security assumptions are documented <a
+                        href="https://codeberg.org/Qarait/ephemera/src/branch/main/SECURITY_MODEL.md"
+                        style="color: var(--accent); text-decoration: underline;">here</a>. Feedback and critique are
+                    welcome.</strong></span>
+            <a href="https://codeberg.org/Qarait/ephemera">Codeberg</a>
+        </div>
+    </footer>
 </body>
 
 </html>
