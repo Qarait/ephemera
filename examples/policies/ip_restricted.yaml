@@ -1,0 +1,29 @@
+# IP/CIDR Restricted Access
+# Demonstrates source IP restrictions
+#
+# NOTE: GateBridge uses simplified CIDR matching.
+# Edge cases like /31 or /30 may differ from Python's ipaddress module.
+
+default:
+  principals: ["sandbox"]
+  max_duration: 5m
+
+policies:
+  - name: "Office-Network"
+    match:
+      source_ip: ["10.0.0.0/8"]
+    principals: ["office-user"]
+    max_duration: 30m
+    
+  - name: "VPN-Users"
+    match:
+      source_ip: ["172.16.0.0/12"]
+      oidc_groups: ["vpn-users"]
+    principals: ["vpn-user"]
+    max_duration: 15m
+    
+  - name: "DataCenter-Only"
+    match:
+      source_ip: ["192.168.100.0/24", "192.168.101.0/24"]
+    principals: ["datacenter"]
+    max_duration: 60m

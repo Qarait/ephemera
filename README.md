@@ -1,11 +1,10 @@
-# Ephemera: Zero-Trust SSH Certificate Authority
+# Ephemera — Zero-Trust SSH Certificate Authority
 
 [![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e51bc11fac8a4f63a61b07200581bdd2)](https://app.codacy.com/gh/Qarait/ephemera/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![Release](https://img.shields.io/github/v/release/ephemerassh/ephemera)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Fuzz Soak](https://img.shields.io/badge/Fuzz_Soak-1M_Iterations_Passed-success)](./docs/audit/million_fuzz.log)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-yellow.svg)
@@ -58,8 +57,8 @@ graph LR
 
 **What Ephemera does:** Governs who may receive access and for how long.  
 **What Ephemera does NOT do:** Runtime monitoring, MITM proxying, command inspection.  
-**Enforcement:** Entirely within native OpenSSH: no Ephemera agent on target servers.  
-**Key rotation:** Not needed: certificates expire automatically.
+**Enforcement:** Entirely within native OpenSSH — no Ephemera agent on target servers.  
+**Key rotation:** Not needed — certificates expire automatically.
 
 ## What Ephemera Is
 
@@ -72,11 +71,11 @@ MITM proxies, custom protocols, or cloud dependencies.
 
 ## What Ephemera Is Not
 
-**Traffic Guarding**: Ephemera does not act as an SSH proxy or MITM gateway.
-**Native Integration**: It is not a PAM replacement.
-**Zero Monitoring**: It does not perform runtime monitoring or behavior analysis.
-**Sovereign Hosting**: It is a self-hosted tool, not a cloud service.
-**Explicit Focus**: It is not a SIEM or general detection platform.
+- Not an SSH proxy or MITM gateway
+- Not a PAM replacement
+- Not a runtime monitoring or behavior analysis tool
+- Not a cloud service
+- Not a SIEM or detection platform
 
 ## Project Status
 
@@ -92,21 +91,21 @@ Traditional SSH relies on long-lived private keys spread across laptops and serv
 ## Positioning
 
 ### Best For
-**Sovereign Deployments**: Teams requiring full ownership of their CA without external cloud dependencies.
-**Air-Gapped Environments**: Designed to operate without outbound internet access once deployed.
-**Minimal Overhead**: Organizations that need strong SSH security without the complexity of managing a full secrets platform.
+- **Sovereign Deployments**: Teams requiring full ownership of their CA without external cloud dependencies.
+- **Air-Gapped Environments**: Designed to operate without outbound internet access once deployed.
+- **Minimal Overhead**: Organizations that need strong SSH security without the complexity of managing a full secrets platform.
 
 ### Not For
-**Enterprise IAM**: If you require deep integration with complex AD/LDAP hierarchies, Teleport or HashiCorp Vault are better suited.
-**Managed Services**: Ephemera is strictly self-hosted and does not offer a SaaS variant.
+- **Enterprise IAM Consolidation**: If you require deep integration with complex AD/LDAP hierarchies, **Teleport** or **HashiCorp Vault** are better suited.
+- **Managed Service Preference**: Ephemera is self-hosted and does not offer a SaaS variant.
 
 ## Key Capabilities
 
-**Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
-**WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
-**Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
-**Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
-**Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
+- **Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
+- **WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
+- **Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
+- **Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
+- **Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
 
 ![Sudo Hang](assets/screenshots/sudo_hang.png)
 
@@ -117,10 +116,10 @@ Ephemera includes an experimental, opt-in governance primitive called Trust Budg
 Trust Budgeting limits cumulative privileged authority at certificate issuance time by treating access as a finite, visible resource. Each certificate issuance consumes an explicit budget. When the budget is exhausted, normal issuance stops until the budget resets or a separate emergency (break-glass) path is used.
 
 This mechanism:
-**Issuance Logic**: Operates only at certificate issuance time.
-**Zero Agents**: Introduces no runtime monitoring or agents.
-**Opt-in Model**: Disabled by default.
-**Technical Limit**: Not a security guarantee.
+- operates only at certificate issuance time
+- introduces no runtime monitoring or agents
+- is disabled by default
+- is not a security guarantee
 
 Trust Budgeting is experimental and may change or be removed.
 
@@ -162,8 +161,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 
 **Alternative Compose Files:**
-**Development Context**: docker-compose.dev.yml includes local builds and syslog.
-**End-to-End Testing**: docker-compose.test.yml includes a dedicated SSH target server.
+- `docker-compose.dev.yml` — Development with local builds and syslog
+- `docker-compose.test.yml` — Includes SSH target for end-to-end testing
 
 ### 2. Client Setup (The Magic)
 
@@ -244,9 +243,9 @@ rules:
 ```
 
 ## Documentation
-**Architecture**: See ARCHITECTURE.md for design details.
-**Security**: See SECURITY_MODEL.md for threat assumptions and trust boundaries.
-**Guides**: See docs/ for additional integration guides.
+- See [ARCHITECTURE.md](ARCHITECTURE.md) for design details.
+- See [SECURITY_MODEL.md](SECURITY_MODEL.md) for threat assumptions and trust boundaries.
+- See [docs/](docs/) for additional guides.
 
 ## Security
 Please see [SECURITY.md](SECURITY.md) for responsible disclosure information.

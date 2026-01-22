@@ -1,0 +1,62 @@
+# Complex Multi-Condition Policy
+# Demonstrates combining multiple match conditions
+#
+# Match semantics:
+# - Phase 1 (OR): oidc_groups, emails, local_usernames trigger match
+# - Phase 2 (AND): source_ip, hours, webauthn_ids filter the match
+
+default:
+  principals: ["sandbox"]
+  max_duration: 5m
+
+policies:
+  # Full admin access: specific users + network + business hours + WebAuthn
+  - name: "Super-Admin"
+    match:
+      emails: ["cto@example.com", "security@example.com"]
+      source_ip: ["10.10.0.0/16"]
+      hours: ["08:00-20:00"]
+      webauthn_ids: ["admin-key-001", "admin-key-002"]
+    principals: ["root"]
+    max_duration: 60m
+    
+  # SRE Production access: group + network
+  - name: "SRE-Prod"
+    match:
+      oidc_groups: ["sre-team", "platform-admins"]
+      source_ip: ["10.0.0.0/8", "172.16.0.0/12"]
+    principals: ["admin", "ubuntu"]
+    max_duration: 30m
+    
+  # Developer access: group + business hours
+  - name: "Dev-Standard"
+    match:
+      oidc_groups: ["developers"]
+      hours: ["09:00-18:00"]
+    principals: ["dev"]
+    max_duration: 15m
+    
+  # Local username match (legacy systems)
+  - name: "Legacy-Users"
+    match:
+      local_usernames: ["legacy_*", "old_*"]
+    principals: ["legacy"]
+    max_duration: 10m
+    
+  # Contractor with email wildcard
+  - name: "External-Contractors"
+    match:
+      emails: ["*@contractor.example.com", "*@vendor.example.com"]
+      source_ip: ["203.0.113.0/24"]  # Contractor VPN range
+    principals: ["contractor-read"]
+    max_duration: 10m
+
+# SUDO elevation rules (separate from cert policies)
+sudo:
+  require_webauthn: true
+  max_duration: 60
+  allowed_groups:
+    - "sre-team"
+    - "platform-admins"
+  allowed_users:
+    - "emergency-admin"

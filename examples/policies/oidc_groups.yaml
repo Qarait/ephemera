@@ -1,0 +1,25 @@
+# OIDC Group-Based Access Control
+# Demonstrates group matching with wildcards
+
+default:
+  principals: ["readonly"]
+  max_duration: 5m
+
+policies:
+  - name: "Platform-Admins"
+    match:
+      oidc_groups: ["platform-admins", "sre-team"]
+    principals: ["root", "admin"]
+    max_duration: 60m
+    
+  - name: "Developers"
+    match:
+      oidc_groups: ["developers", "engineers"]
+    principals: ["dev", "ubuntu"]
+    max_duration: 30m
+    
+  - name: "Contractors"
+    match:
+      emails: ["*@contractor.example.com"]
+    principals: ["contractor"]
+    max_duration: 15m

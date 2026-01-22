@@ -1,0 +1,8 @@
+# Minimal Policy Example
+# The simplest valid Ephemera policy configuration
+
+default:
+  principals: ["guest"]
+  max_duration: 5m
+
+policies: []

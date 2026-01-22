@@ -1,0 +1,57 @@
+# Ephemera Policy Configuration (Example)
+# =========================================
+# This is an EXAMPLE policy file. Customize for your organization.
+# See README.md for policy engine documentation.
+
+# Fallback rule if no policies match
+default:
+  principals: ["sandbox"]
+  max_duration: 15m
+
+policies:
+  - name: "SRE-Prod"
+    match:
+      oidc_groups: ["aws-sre", "platform-admins"]
+      emails: ["cto@example.com"]
+    principals: ["root", "admin", "ubuntu"]
+    max_duration: 60m
+
+  - name: "Developers"
+    match:
+      oidc_groups: ["developers"]
+      local_usernames: ["dev_*"]
+    principals: ["dev", "ubuntu"]
+    max_duration: 30m
+
+  - name: "Contractors"
+    match:
+      emails: ["*@contractor.com"]
+    principals: ["readonly"]
+    max_duration: 10m
+
+
+
+
+
+  - name: "Hardening-IP-Test"
+    match:
+      source_ip: ["10.10.10.10/32"]
+    principals: ["ip-test"]
+    max_duration: 5m
+
+  - name: "Hardening-Time-Test"
+    match:
+      hours: ["10:00-12:00"] # 10am-12pm UTC
+    principals: ["time-test"]
+    max_duration: 5m
+
+# SUDO Elevation Rules
+sudo:
+  require_webauthn: true
+  max_duration: 60  # seconds
+  allowed_groups:
+    - "sre-team"
+    - "platform-admins"
+  allowed_users:
+    - "admin"
+    - "user"  # For testing in Docker

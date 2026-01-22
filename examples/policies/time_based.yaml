@@ -1,0 +1,38 @@
+# Time-Based Access Control
+# Demonstrates business hours restrictions
+#
+# NOTE: GateBridge does NOT support overnight ranges (e.g., 22:00-06:00).
+# Use two separate ranges instead.
+
+default:
+  principals: ["after-hours"]
+  max_duration: 5m
+
+policies:
+  - name: "Business-Hours"
+    match:
+      hours: ["09:00-17:00"]
+    principals: ["standard-user"]
+    max_duration: 30m
+    
+  - name: "Extended-Hours"
+    match:
+      hours: ["07:00-21:00"]
+      oidc_groups: ["oncall"]
+    principals: ["oncall-user"]
+    max_duration: 60m
+    
+  # For overnight access, use two ranges:
+  - name: "Night-Shift-Early"
+    match:
+      hours: ["00:00-06:00"]
+      oidc_groups: ["night-shift"]
+    principals: ["night-user"]
+    max_duration: 30m
+    
+  - name: "Night-Shift-Late"
+    match:
+      hours: ["22:00-23:59"]
+      oidc_groups: ["night-shift"]
+    principals: ["night-user"]
+    max_duration: 30m

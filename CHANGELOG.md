@@ -2,18 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [3.3.0]: 2026-01-21
-
-### Added
-**GateBridge Shadow Evaluation**: Integrated a Rust-based shadow engine that runs in parallel with the YAML policy engine to validate semantic convergence with Gate0.
-**Differential Fuzzer**: Implemented a domain-aware fuzzer in `gatebridge` to proactively discover policy translation gaps.
-**1M Soak Verification**: Formally verified the policy engine against 1,000,000+ random soak iterations with zero mismatches.
-**Forensic Analysis Tools**: Added `analyze_shadow.py` and `gatebridge explain` for deep-dive production triage.
-
-### Changed
-**Policy Assurance**: Hardened CIDR, email, and time-based matching logic based on fuzzer feedback.
-**Documentation**: Updated READMEs with reliability badges and audit logs.
-
 ## [3.2.0] – 2026-01-01
 
 ### Added
