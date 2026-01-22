@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Threat Model  :  Ephemera</title>
+    <title>Threat Model : Ephemera</title>
     <meta name="description"
         content="Ephemera threat model: explicit non-goals, accepted risks, and security trade-offs.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,6 +76,11 @@
                             <td>Merkle-chained ledger. Remote syslog mirroring to isolated sink.</td>
                         </tr>
                         <tr>
+                            <td>Logic engine bugs</td>
+                            <td>Differential Shadow Evaluation (GateBridge) against dual implementations. 1M iterations
+                                passed.</td>
+                        </tr>
+                        <tr>
                             <td>CA key compromise</td>
                             <td>Encrypted at rest. Zero-downtime rotation with multi-CA trust model.</td>
                         </tr>
@@ -134,18 +139,18 @@
             </p>
             <ul>
                 <li>
-                    <strong>Post-authorization credential persistence</strong>  : 
+                    <strong>Post-authorization credential persistence</strong> :
                     As an inherent property of time-bound credentials, a valid certificate remains
                     authorized until its cryptographic expiry even if the initiating endpoint is
                     subsequently compromised.
                 </li>
                 <li>
-                    <strong>Decoupled availability and issuance</strong>  : 
+                    <strong>Decoupled availability and issuance</strong> :
                     In a sovereign deployment model, the inability to reach the CA server prevents new
                     issuance but does not revoke existing, valid sessions until their natural expiration.
                 </li>
                 <li>
-                    <strong>Quorum-based recovery boundaries</strong>  : 
+                    <strong>Quorum-based recovery boundaries</strong> :
                     Quorum cryptography (k-of-n) technically permits recovery if k custodians collude.
                     This is an intended property of the cryptographic model selected for sovereign disaster
                     recovery.
@@ -161,17 +166,16 @@
             </div>
 
             <div class="note">
-                <div class="note-title">Commitment to Transparent Security</div>
-                Explicit acknowledgment of security boundaries increases systemic trust. In high-assurance
-                infrastructure, documenting the technical limits of cryptographic models is essential for
-                informed risk management.
+                <div class="note-title">Hardened Decision Logic</div>
+                Our evaluation engine (Gate0) has been subjected to 1,000,000 differential fuzzing iterations against a
+                reference model without a single divergence. Implementation correctness is a primary security invariant.
             </div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <span>Documentation applies to Ephemera v3.3.0  -  Last Updated: 2026-01-21  -  Source code (canonical):
+            <span>Documentation applies to Ephemera v3.3.0 - Last Updated: 2026-01-21 - Source code (canonical):
                 Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
                 availability.<br>
                 <strong>Threat model and security assumptions are documented <a

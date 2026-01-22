@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architecture  :  Ephemera</title>
+    <title>Architecture : Ephemera</title>
     <meta name="description"
         content="Ephemera architecture: Flask server, OpenSSH CA, WebAuthn MFA, and tamper-evident audit ledger.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,26 +65,36 @@
                     <tbody>
                         <tr>
                             <td>Flask Server</td>
-                            <td>Handles authentication, MFA verification, and certificate signing requests.</td>
+                            <td>Primary frontend; manages user sessions and coordinates evaluation.</td>
+                        </tr>
+                        <tr>
+                            <td>Gate0 (Rust)</td>
+                            <td>Extreme performance logic engine. Mechanically verified for termination and determinism.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GateBridge (Shadow Plane)</td>
+                            <td>Bridges Python and Rust. Performs parallel validation of policy decisions.</td>
                         </tr>
                         <tr>
                             <td>OpenSSH CA</td>
-                            <td>Signs user public keys with a generated CA key. Certificates expire in minutes.</td>
+                            <td>Signs user public keys. Certificates expire in minutes.</td>
                         </tr>
                         <tr>
-                            <td>WebAuthn</td>
-                            <td>Provides phishing-resistant MFA using hardware keys or biometrics.</td>
+                            <td>Trust Budget Ledger</td>
+                            <td>Stateful SQLite accounting for cumulative issuance limits.</td>
                         </tr>
                         <tr>
                             <td>Audit Ledger</td>
-                            <td>Hash-chained log of all issuance events. Tamper-evident by design.</td>
+                            <td>Hash-chained log of all events. Tamper-evident by design.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <h2>Security Properties</h2>
-            <p><strong>CA Key</strong> : Encrypted at rest, never leaves the container. Stored with 0400 permissions.</p>
+            <p><strong>CA Key</strong> : Encrypted at rest, never leaves the container. Stored with 0400 permissions.
+            </p>
             <p><strong>Audit</strong> : Tamper-evident ledger with optional remote syslog mirroring.</p>
             <p><strong>Ephemeral</strong> : Certificates expire in minutes by default (configurable via policy).</p>
 
@@ -99,17 +109,40 @@
                 records every issuance with a cryptographic chain to detect tampering.
             </p>
 
-            <h2>Diagram</h2>
+            <h2>System Design</h2>
+            <div class="flow">
+                [ User Request ] --&gt; ( Flask Server )
+                |
+                +----------------+----------------+
+                | |
+                [ Reference Evaluator ] &lt;-- ( GateBridge Shadow Plane ) --&gt; [ Gate0 Rust Engine ]
+                | |
+                +----------------+----------------+
+                |
+                ( If Match ) --&gt; [ Trust Budget Check ] --&gt; ( OpenSSH CA ) --&gt; [ Cert ]
+            </div>
+
+            <h2>Architecture Philosophy</h2>
             <p>
-                <img src="assets/diagrams/ephemera_v2_architecture.png" alt="Ephemera Architecture Diagram"
-                    style="max-width: 100%; border: 1px solid var(--border); border-radius: 6px;">
+                Ephemera employs a <strong>Stateless Core / Stateful Wrapper</strong> design to maintain security
+                invariants.
+            </p>
+            <p>
+                <strong>Gate0</strong> is a purely stateless, logical engine. This allows it to be audited and fuzzed
+                with mathematical rigor (including our 1,000,000 iteration soak test). It receives policy rules and user
+                context, and returns a boolean decision with metadata.
+            </p>
+            <p>
+                <strong>Trust Budgeting</strong> is a stateful operation handled by the Python wrapper. Because
+                budgeting requires atomic ledger increments and persistent state, it sits outside the logic engine. This
+                ensures that a bug in the evaluation logic cannot inadvertently wipe the trust ledger, and vice versa.
             </p>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <span>Documentation applies to Ephemera v3.3.0  -  Last Updated: 2026-01-21  -  Source code (canonical):
+            <span>Documentation applies to Ephemera v3.3.0 - Last Updated: 2026-01-21 - Source code (canonical):
                 Codeberg. GitHub mirror available for convenience. This documentation is hosted on GitHub Pages for
                 availability.<br>
                 <strong>Threat model and security assumptions are documented <a
