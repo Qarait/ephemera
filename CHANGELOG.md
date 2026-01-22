@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0] - 2026-01-21
+
+### Added
+- **GateBridge Differential Fuzzer**: A proactive hardening tool that generates random policies and requests to verify semantic parity between evaluation engines.
+- **Shadow Evaluation Plane**: Real-time parallel evaluation of production traffic using the Gate0 engine (observational only).
+- **1,000,000 Iteration Soak Test**: Verified Zero Mismatches across 1 million fuzzing iterations, providing a "Gold Standard" reliability signal.
+- **Mismatch Forensic Tools**: Automated capture of divergence artifacts for rapid triage.
+
+### Security
+- Hardened policy engine via differential fuzzing.
+- Verified absence of logic inversions or edge-case panics in the shadow plane.
+
+---
+
 ## [3.2.0] – 2026-01-01
 
 ### Added

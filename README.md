@@ -1,4 +1,4 @@
-# Ephemera — Zero-Trust SSH Certificate Authority
+# Ephemera : Zero-Trust SSH Certificate Authority
 
 [![CI Status](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ephemerassh/ephemera/actions/workflows/ci.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11722/badge)](https://www.bestpractices.dev/projects/11722)
@@ -8,6 +8,7 @@
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-yellow.svg)
+[![Fuzz Soak](https://img.shields.io/badge/Fuzz_Soak-1M_Iterations_Passed-success)](docs/audit/million_fuzz.log)
 
 **Ephemera** is a lightweight, self-hosted SSH Certificate Authority designed to enforce Zero-Trust access for infrastructure. It replaces static SSH keys with short-lived certificates, integrates hardware-backed WebAuthn MFA, and maintains cryptographically verifiable audit trails.
 
@@ -101,11 +102,15 @@ Traditional SSH relies on long-lived private keys spread across laptops and serv
 
 ## Key Capabilities
 
-- **Just-in-Time Access**: Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
-- **WebAuthn Enforcement**: Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
-- **Sovereign Recovery**: Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
-- **Verifiable Audit**: All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
-- **Granular RBAC**: A YAML-based policy engine defines access based on roles, resources, and conditions.
+**Just-in-Time Access** : Certificates expire in minutes (default 5m), reducing the window of opportunity for stolen credentials.
+
+**WebAuthn Enforcement** : Certificate issuance requires physical MFA (FIDO2) interaction via YubiKey or TouchID.
+
+**Sovereign Recovery** : Encrypted backups are protected via Shamir's Secret Sharing, requiring a quorum to restore.
+
+**Verifiable Audit** : All CA actions are logged to a Merkle-chained ledger for tamper-evident history.
+
+**Granular RBAC** : A YAML-based policy engine defines access based on roles, resources, and conditions.
 
 ![Sudo Hang](assets/screenshots/sudo_hang.png)
 
