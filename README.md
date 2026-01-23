@@ -248,8 +248,8 @@ rules:
 ```
 
 ## Documentation
-- See [ARCHITECTURE.md](ARCHITECTURE.md) for design details.
-- See [SECURITY_MODEL.md](SECURITY_MODEL.md) for threat assumptions and trust boundaries.
+- See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for design details.
+- See [SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for threat assumptions and trust boundaries.
 - See [docs/](docs/) for additional guides.
 
 ## Security
