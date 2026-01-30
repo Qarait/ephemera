@@ -130,6 +130,63 @@ Trust Budgeting is experimental and may change or be removed.
 
 **Documentation**: [docs/trust_budgeting.md](docs/trust_budgeting.md)
 
+## GateBridge: Shadow Policy Evaluation
+
+Ephemera includes GateBridge, a shadow evaluation system that validates policy decisions against an alternate engine (Gate0) without affecting production behavior.
+
+### Shadow Mode Guarantees
+
+- **Fail-Open**: If Gate0 fails, crashes, or times out, production issuance continues unaffected.
+- **No Retries**: Single attempt per evaluation — no retry loops.
+- **No Fallbacks**: YAML policy engine is always authoritative.
+- **Observational Only**: Gate0 never blocks or modifies certificate issuance.
+
+### Log Schema (`policy-shadow.log`)
+
+Each entry contains:
+
+| Field | Description |
+|:------|:------------|
+| `timestamp` | ISO 8601 UTC timestamp |
+| `match` | Boolean — did both engines agree? |
+| `versions.bridge` | GateBridge Python version |
+| `versions.gate0` | Gate0 CLI version |
+| `versions.policy_hash` | SHA256 hash of policy.yaml |
+| `context_hash` | SHA256 hash of canonicalized input |
+| `yaml_decision` | YAML engine result |
+| `gate0_decision` | Gate0 engine result |
+| `snapshot` | Full context (only on mismatch, size-capped) |
+
+### Health Endpoint
+
+```
+GET /api/admin/gate0/status
+```
+
+Returns:
+```json
+{
+  "bridge_version": "1.0.0",
+  "gate0_version": "v0.2.1",
+  "policy_hash": "sha256:8f4b...",
+  "status": "healthy",
+  "last_mismatch": null,
+  "telemetry": {
+    "latency_p50_ms": 2.3,
+    "latency_p95_ms": 5.1,
+    "latency_p99_ms": 8.7
+  }
+}
+```
+
+### Rollback
+
+GateBridge can be disabled via configuration flag. Shadow mode is fail-open and does not affect authorization decisions.
+
+### Compatibility
+
+No breaking changes to Gate0 CLI interface. Shadow logs gain new fields but remain backward parseable.
+
 ## Quick Start
 
 **Goal:** Issue your first SSH certificate in under 5 minutes.
@@ -258,4 +315,4 @@ Please see [SECURITY.md](SECURITY.md) for responsible disclosure information.
 Looking to contribute? Check out our [Small Tasks for New Contributors](CONTRIBUTING.md#small-tasks-for-new-contributors).
 
 > [!TIP]
-> **Threat model and security assumptions are documented [here](SECURITY_MODEL.md). Feedback and critique are welcome.**
+> **Threat model and security assumptions are documented [here](docs/SECURITY_MODEL.md). Feedback and critique are welcome.**

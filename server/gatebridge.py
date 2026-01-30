@@ -1,5 +1,5 @@
 """
-GateBridge Shadow Evaluation Wrapper
+GateBridge Shadow Evaluation Wrapper (v1.0.0)
 
 This module provides a Python interface to the GateBridge CLI for shadow policy evaluation.
 Shadow mode is OBSERVATIONAL ONLY — Gate0 decisions never affect production behavior.
@@ -10,38 +10,70 @@ Key properties:
 - No fallbacks: If Gate0 fails, we just don't have shadow data
 - No consensus: YAML decision is always authoritative
 
-Future considerations:
-- Shadow evaluation may be sampled or rate-limited to avoid performance overhead
-- Consider async execution if synchronous overhead becomes measurable
+Canonicalization Rules (v1.0.0):
+- Emails: lowercased
+- Usernames: lowercased
+- IPs: normalized via ipaddress module
+- Time: UTC, with precomputed hour/weekday/business_hours facts
+- Wildcard semantics: fnmatch-compatible
+- CIDR: Python ipaddress module behavior
 """
 
 import subprocess
 import json
 import logging
 import os
-from datetime import datetime
-from typing import Optional
+import hashlib
+import ipaddress
+import time as time_module
+from collections import deque
+from datetime import datetime, timezone
+from typing import Optional, List
 from dataclasses import dataclass, field
 from threading import Lock
 
-# --- Shadow Failure Telemetry ---
-# Separate from policy-shadow.log to track operational health
+# --- Bridge Version ---
+BRIDGE_VERSION = "1.0.0"
+
+# --- Configuration ---
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_DEFAULT_CLI_PATH = os.path.join(_BASE_DIR, '..', 'bin', 'gatebridge.exe')
+GATEBRIDGE_CLI = os.environ.get('GATEBRIDGE_CLI', _DEFAULT_CLI_PATH)
+SHADOW_TIMEOUT_SECONDS = 5
+SHADOW_LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+SHADOW_LOG_FILE = os.path.join(SHADOW_LOG_DIR, 'policy-shadow.log')
+SHADOW_DEBUG_FILE = os.path.join(SHADOW_LOG_DIR, 'shadow-debug.log')
+
+# Log volume controls
+SNAPSHOT_ON_MISMATCH_ONLY = True
+SNAPSHOT_SIZE_CAP_KB = 16
+
+# Business hours definition (UTC)
+BUSINESS_HOURS_START = 9
+BUSINESS_HOURS_END = 17
+BUSINESS_DAYS = {"monday", "tuesday", "wednesday", "thursday", "friday"}
+
+# --- Shadow Telemetry ---
+# Percentiles computed over last 1000 shadow calls (rolling window).
 
 @dataclass
 class ShadowTelemetry:
-    """Tracks shadow evaluation failures for operational visibility."""
+    """Tracks shadow evaluation metrics for operational visibility."""
     total_calls: int = 0
     successful: int = 0
     timeouts: int = 0
     cli_failures: int = 0
     json_parse_errors: int = 0
     other_errors: int = 0
+    last_mismatch_timestamp: Optional[str] = None
+    latency_ms: deque = field(default_factory=lambda: deque(maxlen=1000))
     _lock: Lock = field(default_factory=Lock, repr=False)
     
-    def record_success(self):
+    def record_success(self, latency: float):
         with self._lock:
             self.total_calls += 1
             self.successful += 1
+            self.latency_ms.append(latency)
     
     def record_timeout(self):
         with self._lock:
@@ -63,8 +95,24 @@ class ShadowTelemetry:
             self.total_calls += 1
             self.other_errors += 1
     
+    def record_mismatch(self, timestamp: str):
+        with self._lock:
+            self.last_mismatch_timestamp = timestamp
+    
+    def _percentile(self, data: List[float], p: int) -> Optional[float]:
+        if not data:
+            return None
+        sorted_data = sorted(data)
+        k = (len(sorted_data) - 1) * p / 100
+        f = int(k)
+        c = f + 1
+        if c >= len(sorted_data):
+            return sorted_data[f]
+        return sorted_data[f] + (sorted_data[c] - sorted_data[f]) * (k - f)
+    
     def get_stats(self) -> dict:
         with self._lock:
+            latencies = list(self.latency_ms)
             return {
                 "total_calls": self.total_calls,
                 "successful": self.successful,
@@ -72,30 +120,24 @@ class ShadowTelemetry:
                 "cli_failures": self.cli_failures,
                 "json_parse_errors": self.json_parse_errors,
                 "other_errors": self.other_errors,
-                "success_rate": (self.successful / self.total_calls * 100) if self.total_calls > 0 else 0
+                "success_rate": (self.successful / self.total_calls * 100) if self.total_calls > 0 else 0,
+                "timeout_rate": (self.timeouts / self.total_calls * 100) if self.total_calls > 0 else 0,
+                "latency_p50_ms": self._percentile(latencies, 50),
+                "latency_p95_ms": self._percentile(latencies, 95),
+                "latency_p99_ms": self._percentile(latencies, 99),
+                "latency_window_size": len(latencies),
+                "last_mismatch": self.last_mismatch_timestamp
             }
 
 # Global telemetry instance
 shadow_telemetry = ShadowTelemetry()
 
 # --- Logging Setup ---
-
-# Debug logger for shadow failures (separate channel)
 shadow_debug_logger = logging.getLogger('gatebridge_debug')
 shadow_debug_logger.setLevel(logging.DEBUG)
 
-# Policy mismatch logger (the actual data we care about)
 shadow_policy_logger = logging.getLogger('gatebridge_policy')
 shadow_policy_logger.setLevel(logging.INFO)
-
-# Configuration
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-_DEFAULT_CLI_PATH = os.path.join(_BASE_DIR, '..', 'bin', 'gatebridge.exe')
-GATEBRIDGE_CLI = os.environ.get('GATEBRIDGE_CLI', _DEFAULT_CLI_PATH)
-SHADOW_TIMEOUT_SECONDS = 5
-SHADOW_LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
-SHADOW_LOG_FILE = os.path.join(SHADOW_LOG_DIR, 'policy-shadow.log')
-SHADOW_DEBUG_FILE = os.path.join(SHADOW_LOG_DIR, 'shadow-debug.log')
 
 
 def _ensure_log_dir():
@@ -104,62 +146,163 @@ def _ensure_log_dir():
         try:
             os.makedirs(SHADOW_LOG_DIR)
         except OSError:
-            pass  # Fail silently, logging will just not work
+            pass
 
 
 def _setup_file_handlers():
     """Setup file handlers for shadow logging."""
     _ensure_log_dir()
     
-    # Debug handler (operational failures)
     if not shadow_debug_logger.handlers:
         try:
             debug_handler = logging.FileHandler(SHADOW_DEBUG_FILE)
             debug_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
             shadow_debug_logger.addHandler(debug_handler)
         except Exception:
-            pass  # Fail silently
+            pass
     
-    # Policy handler (mismatches) - JSON Lines format
     if not shadow_policy_logger.handlers:
         try:
             policy_handler = logging.FileHandler(SHADOW_LOG_FILE)
-            policy_handler.setFormatter(logging.Formatter('%(message)s'))  # Raw JSON
+            policy_handler.setFormatter(logging.Formatter('%(message)s'))
             shadow_policy_logger.addHandler(policy_handler)
         except Exception:
-            pass  # Fail silently
+            pass
 
 
-# Initialize handlers on module load
 _setup_file_handlers()
 
+
+# --- Policy Hash Cache ---
+_policy_hash_cache = {}
+
+
+def _get_policy_hash(policy_path: str) -> str:
+    """Compute SHA256 hash of policy file. Cached per path/mtime."""
+    try:
+        mtime = os.path.getmtime(policy_path)
+        cache_key = f"{policy_path}:{mtime}"
+        if cache_key in _policy_hash_cache:
+            return _policy_hash_cache[cache_key]
+        
+        with open(policy_path, 'rb') as f:
+            h = hashlib.sha256(f.read()).hexdigest()[:16]
+        _policy_hash_cache[cache_key] = h
+        return h
+    except Exception:
+        return "unknown"
+
+
+def _get_gate0_version() -> str:
+    """Attempt to get Gate0 CLI version."""
+    try:
+        result = subprocess.run(
+            [GATEBRIDGE_CLI, "--version"],
+            capture_output=True,
+            text=True,
+            timeout=2
+        )
+        return result.stdout.strip() or "unknown"
+    except Exception:
+        return "unknown"
+
+
+# --- Canonicalization ---
+
+def _canonicalize_context(user_context: dict) -> dict:
+    """
+    Canonicalize user context for deterministic comparison.
+    
+    Rules:
+    - Emails/usernames: lowercased
+    - IPs: normalized via ipaddress module
+    - Time: UTC with precomputed facts
+    """
+    # Get current time (UTC)
+    current_time = user_context.get("current_time")
+    if current_time is None:
+        current_time = datetime.now(timezone.utc)
+    elif not hasattr(current_time, 'tzinfo') or current_time.tzinfo is None:
+        current_time = current_time.replace(tzinfo=timezone.utc)
+    
+    now_utc = current_time.astimezone(timezone.utc)
+    weekday = now_utc.strftime("%A").lower()
+    hour_utc = now_utc.hour
+    is_business_hours = (
+        weekday in BUSINESS_DAYS and
+        BUSINESS_HOURS_START <= hour_utc < BUSINESS_HOURS_END
+    )
+    
+    # Normalize IP
+    ip_raw = user_context.get("ip", "")
+    ip_normalized = ""
+    if ip_raw:
+        try:
+            ip_normalized = str(ipaddress.ip_address(ip_raw))
+        except ValueError:
+            ip_normalized = ip_raw.strip().lower()
+    
+    # Normalize email/username
+    email = (user_context.get("email") or "").lower().strip()
+    username = (user_context.get("username") or "").lower().strip()
+    
+    # Normalize OIDC groups
+    oidc_groups = user_context.get("oidc_groups", [])
+    if oidc_groups:
+        oidc_groups = sorted([g.lower().strip() for g in oidc_groups])
+    
+    return {
+        "username": username,
+        "email": email,
+        "oidc_groups": oidc_groups,
+        "auth_mode": user_context.get("auth_mode", "local"),
+        "source_ip": ip_normalized,
+        "webauthn_id": user_context.get("webauthn_id"),
+        # Precomputed time facts for Gate0
+        "now_utc_rfc3339": now_utc.isoformat(),
+        "hour_utc": hour_utc,
+        "weekday_utc": weekday,
+        "is_business_hours": is_business_hours,
+        # Legacy format for Gate0 CLI
+        "current_time": now_utc.strftime("%H:%M")
+    }
+
+
+def _convert_to_gatebridge_request(canonical_context: dict) -> dict:
+    """
+    Convert canonical context to GateBridge CLI request format.
+    """
+    return {
+        "subject": canonical_context.get("username", ""),
+        "oidc_groups": canonical_context.get("oidc_groups", []),
+        "email": canonical_context.get("email", ""),
+        "local_username": canonical_context.get("username", ""),
+        "source_ip": canonical_context.get("source_ip", ""),
+        "current_time": canonical_context.get("current_time"),
+        "hour_utc": canonical_context.get("hour_utc"),
+        "weekday_utc": canonical_context.get("weekday_utc"),
+        "is_business_hours": canonical_context.get("is_business_hours"),
+        "webauthn_id": canonical_context.get("webauthn_id")
+    }
+
+
+# --- Shadow Evaluation ---
 
 def shadow_evaluate(policy_path: str, user_context: dict) -> Optional[dict]:
     """
     Run GateBridge shadow evaluation via CLI subprocess.
     
-    OBSERVATIONAL ONLY: This function never affects production behavior.
+    OBSERVATIONAL ONLY: Never affects production behavior.
     - Returns None on any failure (fail-open)
-    - No retries
-    - No fallbacks
-    - Swallows all exceptions
-    
-    Args:
-        policy_path: Path to the YAML policy file
-        user_context: User context dict matching Ephemera's policy evaluation format
-    
-    Returns:
-        dict with shadow evaluation result, or None on failure
-        {
-            "reference_decision": {"effect": "allow", "policy_name": "..."},
-            "gate0_decision": {"effect": "allow", "reason_code": 0},
-            "match": true/false,
-            "stats": {...}
-        }
+    - No retries, no fallbacks
+    - Tracks latency for percentile reporting
     """
+    start_time = time_module.perf_counter()
+    
     try:
-        # Convert user_context to GateBridge request format
-        request_json = json.dumps(_convert_to_gatebridge_request(user_context))
+        # Canonicalize context
+        canonical_context = _canonicalize_context(user_context)
+        request_json = json.dumps(_convert_to_gatebridge_request(canonical_context))
         
         result = subprocess.run(
             [GATEBRIDGE_CLI, "shadow", policy_path, "-"],
@@ -169,16 +312,19 @@ def shadow_evaluate(policy_path: str, user_context: dict) -> Optional[dict]:
             timeout=SHADOW_TIMEOUT_SECONDS
         )
         
+        latency_ms = (time_module.perf_counter() - start_time) * 1000
+        
         if result.returncode == 2:
-            # Error exit code
             shadow_telemetry.record_cli_failure()
             shadow_debug_logger.warning(f"GateBridge CLI error: {result.stderr}")
             return None
         
-        # Parse output (returncode 0 = match, 1 = mismatch, both are valid)
         try:
             output = json.loads(result.stdout)
-            shadow_telemetry.record_success()
+            shadow_telemetry.record_success(latency_ms)
+            # Attach canonical context for logging
+            output["_canonical_context"] = canonical_context
+            output["_request_json"] = request_json
             return output
         except json.JSONDecodeError as e:
             shadow_telemetry.record_json_error()
@@ -199,60 +345,41 @@ def shadow_evaluate(policy_path: str, user_context: dict) -> Optional[dict]:
         return None
 
 
-def _convert_to_gatebridge_request(user_context: dict) -> dict:
-    """
-    Convert Ephemera user_context to GateBridge request format.
-    
-    Ephemera context:
-    {
-        "username": "...",
-        "email": "...",
-        "oidc_groups": [...],
-        "auth_mode": "local" | "oidc",
-        "ip": "1.2.3.4",
-        "current_time": datetime_obj,
-        "webauthn_id": "..."
-    }
-    
-    GateBridge request:
-    {
-        "subject": "...",
-        "oidc_groups": [...],
-        "email": "...",
-        "local_username": "...",
-        "source_ip": "...",
-        "current_time": "HH:MM",
-        "webauthn_id": "..."
-    }
-    """
-    current_time = user_context.get("current_time")
-    time_str = None
-    if current_time:
-        if hasattr(current_time, 'strftime'):
-            time_str = current_time.strftime("%H:%M")
-        elif isinstance(current_time, str):
-            time_str = current_time
-    
-    return {
-        "subject": user_context.get("username", ""),
-        "oidc_groups": user_context.get("oidc_groups", []),
-        "email": user_context.get("email", ""),
-        "local_username": user_context.get("username", ""),
-        "source_ip": user_context.get("ip", ""),
-        "current_time": time_str,
-        "webauthn_id": user_context.get("webauthn_id")
-    }
+# --- Logging ---
 
-
-def log_policy_mismatch(yaml_result: dict, shadow_result: dict, user_context: dict):
+def log_policy_mismatch(yaml_result: dict, shadow_result: dict, user_context: dict, policy_path: str):
     """
-    Log a policy mismatch to the shadow log file.
+    Log a policy evaluation result to the shadow log file.
     
-    Format: JSON Lines (one JSON object per line)
+    Log volume controls:
+    - Always: hashes, versions, decisions
+    - Full snapshot: only on mismatch, truncated to SNAPSHOT_SIZE_CAP_KB
     """
+    is_mismatch = not shadow_result.get("match", True)
+    timestamp = datetime.now(timezone.utc).isoformat()
+    
+    if is_mismatch:
+        shadow_telemetry.record_mismatch(timestamp)
+    
+    # Get canonical context from shadow result
+    canonical_context = shadow_result.get("_canonical_context", {})
+    request_json = shadow_result.get("_request_json", "")
+    
+    # Compute context hash
+    context_hash = hashlib.sha256(
+        json.dumps(canonical_context, sort_keys=True).encode()
+    ).hexdigest()[:16]
+    
     entry = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": timestamp,
         "match": shadow_result.get("match", False),
+        # Version locking
+        "versions": {
+            "bridge": BRIDGE_VERSION,
+            "gate0": _get_gate0_version(),
+            "policy_hash": _get_policy_hash(policy_path)
+        },
+        # Decisions (always logged)
         "yaml_decision": {
             "policy_name": yaml_result.get("name"),
             "principals": yaml_result.get("principals"),
@@ -260,14 +387,49 @@ def log_policy_mismatch(yaml_result: dict, shadow_result: dict, user_context: di
         },
         "gate0_decision": shadow_result.get("gate0_decision"),
         "reference_decision": shadow_result.get("reference_decision"),
-        "context": {
-            "username": user_context.get("username"),
-            "email": user_context.get("email"),
-            "ip": user_context.get("ip"),
-            "auth_mode": user_context.get("auth_mode")
-        },
+        # Context hash (always logged)
+        "context_hash": context_hash,
         "stats": shadow_result.get("stats")
     }
+    
+    # Full snapshot only on mismatch (with size cap)
+    if is_mismatch or not SNAPSHOT_ON_MISMATCH_ONLY:
+        snapshot = {
+            "canonical_context": canonical_context,
+            "gate0_request": request_json
+        }
+        snapshot_json = json.dumps(snapshot)
+        
+        # Check if truncation needed
+        max_bytes = SNAPSHOT_SIZE_CAP_KB * 1024
+        if len(snapshot_json) > max_bytes:
+            # Truncate by removing request_json first, then canonical_context fields
+            # to maintain valid JSON structure
+            truncated_snapshot = {
+                "canonical_context": canonical_context,
+                "gate0_request": "[TRUNCATED]",
+                "_truncated": True,
+                "_original_size_bytes": len(snapshot_json)
+            }
+            snapshot_json = json.dumps(truncated_snapshot)
+            
+            # If still too large, truncate canonical_context to essentials
+            if len(snapshot_json) > max_bytes:
+                minimal_context = {
+                    "username": canonical_context.get("username"),
+                    "email": canonical_context.get("email"),
+                    "source_ip": canonical_context.get("source_ip"),
+                    "hour_utc": canonical_context.get("hour_utc")
+                }
+                truncated_snapshot = {
+                    "canonical_context": minimal_context,
+                    "gate0_request": "[TRUNCATED]",
+                    "_truncated": True,
+                    "_original_size_bytes": len(json.dumps(snapshot))
+                }
+                snapshot_json = json.dumps(truncated_snapshot)
+        
+        entry["snapshot"] = snapshot_json
     
     try:
         shadow_policy_logger.info(json.dumps(entry))
@@ -275,9 +437,45 @@ def log_policy_mismatch(yaml_result: dict, shadow_result: dict, user_context: di
         shadow_debug_logger.error(f"Failed to log policy mismatch: {e}")
 
 
+# --- Health Check ---
+
+def get_bridge_status(policy_path: str = None) -> dict:
+    """
+    Get current bridge status for health check endpoint.
+    
+    Returns:
+        {
+            "bridge_version": "1.0.0",
+            "gate0_version": "v0.2.1",
+            "policy_hash": "sha256:8f4b...",
+            "status": "healthy",
+            "last_mismatch": "2025-01-30T10:00:00Z",
+            "telemetry": {...}
+        }
+    """
+    stats = shadow_telemetry.get_stats()
+    
+    # Determine health status
+    status = "healthy"
+    if stats["cli_failures"] > 0 and stats["successful"] == 0:
+        status = "degraded"
+    elif stats["timeout_rate"] and stats["timeout_rate"] > 10:
+        status = "degraded"
+    
+    policy_hash = "unknown"
+    if policy_path:
+        policy_hash = _get_policy_hash(policy_path)
+    
+    return {
+        "bridge_version": BRIDGE_VERSION,
+        "gate0_version": _get_gate0_version(),
+        "policy_hash": f"sha256:{policy_hash}",
+        "status": status,
+        "last_mismatch": stats.get("last_mismatch"),
+        "telemetry": stats
+    }
+
+
 def get_shadow_telemetry() -> dict:
-    """
-    Get current shadow evaluation telemetry stats.
-    Useful for monitoring/admin endpoints.
-    """
+    """Get current shadow evaluation telemetry stats."""
     return shadow_telemetry.get_stats()

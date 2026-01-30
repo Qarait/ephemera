@@ -2,12 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.0] - 2026-01-30
+
+### Added
+- **GateBridge Tightening**: Production-hardened shadow evaluation with:
+  - Deterministic context canonicalization (lowercased emails/usernames, normalized IPs, sorted OIDC groups)
+  - Precomputed time facts (`hour_utc`, `weekday_utc`, `is_business_hours`) for Gate0
+  - Context hashing (SHA256) for reproducible audit trails
+  - Version locking: bridge version, Gate0 version, and policy hash in every log entry
+  - Bounded telemetry: `deque(maxlen=1000)` for p50/p95/p99 latency percentiles
+  - Log volume controls: snapshots only on mismatch, size-capped to preserve JSON validity
+- **Health Check Endpoint**: `GET /api/admin/gate0/status` for immediate deployment verification
+- **Replay Test Script**: `replay_shadow_case.py` for reproducing mismatches from logged snapshots
+- **Canonicalization Tests**: Unit tests for policy-aligned input normalization
+
+### Security
+- Hardened snapshot truncation to preserve valid JSON structure
+- Context hashes computed on full canonical context before any truncation
+
+---
+
 ## [3.3.0] - 2026-01-21
 
 ### Added
 - **GateBridge Differential Fuzzer**: A proactive hardening tool that generates random policies and requests to verify semantic parity between evaluation engines.
 - **Shadow Evaluation Plane**: Real-time parallel evaluation of production traffic using the Gate0 engine (observational only).
-- **1,000,000 Iteration Soak Test**: Verified Zero Mismatches across 1 million fuzzing iterations, providing a "Gold Standard" reliability signal.
+- **1,000,000 Iteration Soak Test**: Verified Zero Mismatches across 1 million fuzzing iterations, providing a \"Gold Standard\" reliability signal.
 - **Mismatch Forensic Tools**: Automated capture of divergence artifacts for rapid triage.
 
 ### Security

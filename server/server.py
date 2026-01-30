@@ -31,7 +31,7 @@ from .config_auth import AUTH_MODE, AuthMode, validate_auth_config
 from .auth_oidc import oidc_bp, init_oidc
 from .policy import PolicyEngine, parse_duration
 from .trust_budget import TrustBudgetLedger
-from .gatebridge import shadow_evaluate, log_policy_mismatch
+from .gatebridge import shadow_evaluate, log_policy_mismatch, get_bridge_status
 
 app = Flask(__name__, static_folder=PUBLIC_DIR)
 # Trust X-Forwarded-For headers from the Docker gateway/proxy
@@ -517,6 +517,14 @@ def get_krl():
     else:
         return "KRL not found", 404
 
+# --- Gate0 Shadow Evaluation Status ---
+@app.route('/api/admin/gate0/status', methods=['GET'])
+@require_admin
+def gate0_status():
+    """Returns the current GateBridge/Gate0 shadow evaluation status."""
+    status = get_bridge_status(POLICY_FILE)
+    return jsonify(status)
+
 # --- Ephemeral SUDO Endpoints ---
 from .sudo_manager import sudo_manager
 
@@ -791,8 +799,8 @@ def request_cert():
         # Gate0 runs in parallel for validation. Never affects production.
         # Future: May be sampled or rate-limited if overhead becomes measurable.
         shadow_result = shadow_evaluate(POLICY_FILE, user_context)
-        if shadow_result and not shadow_result.get("match"):
-            log_policy_mismatch(policy_result, shadow_result, user_context)
+        if shadow_result:
+            log_policy_mismatch(policy_result, shadow_result, user_context, POLICY_FILE)
         # --- End Shadow Evaluation ---
         
         # Log Policy Match
