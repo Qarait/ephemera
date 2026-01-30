@@ -6,7 +6,7 @@ from unittest.mock import patch
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import ephemera_cli
+from cli import ephemera_cli
 
 def test_login():
     totp = pyotp.TOTP('7IFS52L4GCNMH37AMIZR3ZWFRDJYVB5H')
