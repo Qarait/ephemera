@@ -313,6 +313,7 @@ rules:
 - **[Live Documentation Overview](https://qarait.github.io/ephemera/)**
 - See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for design details.
 - See [SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for threat assumptions and trust boundaries.
+- See [SECURITY_SPECIFICATIONS.md](docs/SECURITY_SPECIFICATIONS.md) for deep-dive technical specs.
 - See [PRODUCTION_READY.md](docs/PRODUCTION_READY.md) for hardening and operations checklists.
 - See [docs/](docs/) for additional guides.
 
