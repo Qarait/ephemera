@@ -93,6 +93,53 @@ Remaining: 99 points
 - **No heuristics or ML**: This is a mechanical, predictable accounting system.
 - **No automatic resets without config**: Reset intervals must be explicitly defined.
 
+## Operational Visibility
+
+Because Trust Budgeting can block legitimate issuance when budgets are exhausted, operators should implement visibility:
+
+### Recommended Alerting
+
+| Alert | Trigger | Action |
+|:------|:--------|:-------|
+| Low Balance Warning | Balance < 20% of initial | Notify user/team, review issuance frequency |
+| Budget Exhaustion | Balance = 0 | Notify on-call, verify if expected or anomalous |
+| Rapid Depletion | > 50% consumed in < 1 hour | Investigate for credential abuse or automation bug |
+
+### Monitoring Queries
+
+Query the `trust_budget.db` SQLite database directly:
+
+```sql
+-- Current balances below threshold
+SELECT budget_id, balance, initial_balance 
+FROM budgets 
+WHERE balance < (initial_balance * 0.2);
+
+-- Recent high-cost activity
+SELECT budget_id, username, cost, timestamp 
+FROM transactions 
+WHERE timestamp > datetime('now', '-1 hour')
+ORDER BY cost DESC;
+```
+
+> [!IMPORTANT]
+> If Trust Budgeting is enabled, ensure operators have visibility into balance states. Unexpected exhaustion may indicate credential abuse or a runaway automation script.
+
+## Break-Glass Hardening
+
+Because Trust Budgeting does not block Break-Glass, the emergency issuance path becomes a higher-value target for attackers. Break-Glass should have compensating controls:
+
+| Control | Purpose |
+|:--------|:--------|
+| **WebAuthn-only** | No TOTP fallback for break-glass |
+| **Shorter TTL** | Break-glass certificates should have reduced validity (e.g., 60s) |
+| **Enhanced Logging** | Log break-glass events to both local and remote sinks |
+| **Quorum Approval** (optional) | Require multiple approvers for break-glass in high-security environments |
+| **Rate Limiting** | Limit break-glass issuance to prevent abuse |
+
+> [!CAUTION]
+> If Trust Budgeting is deployed, review your break-glass controls. An exhausted budget combined with weak break-glass controls creates an exploitable gap.
+
 ## Audit Trail
 
 All budget transactions are logged to the SQLite database (`server/data/trust_budget.db`) and can be queried for audit purposes.
