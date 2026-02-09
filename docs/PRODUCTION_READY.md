@@ -29,6 +29,9 @@ Ephemera includes in-memory rate limiting (5 login attempts/15m; 20 cert request
 - **Caveat**: In-memory limits **do not** coordinate across replicas and reset on container restart.
 - **Recommendation**: For production, enforce coarse rate limits (concurrency and request rate) at your reverse proxy or load balancer layer.
 
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
+
 ## 2. SSH Server-Side Rollout
 
 To enroll a target server into the Ephemera trust domain:
@@ -60,6 +63,9 @@ PubkeyAuthentication yes
 ### Principals Mapping
 Ensure your OIDC/Policy identities match the principals allowed on the target server (e.g., `root`, `ubuntu`, or a shared service account). Use `ephemera server-setup` to automate this.
 
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
+
 ## 3. CA Key Rotation Runbook
 
 To maintain security hygiene, rotate the CA key periodically (e.g., every 90 days).
@@ -73,6 +79,9 @@ To maintain security hygiene, rotate the CA key periodically (e.g., every 90 day
    `POST /api/ca/rotate` (Admin only)
    Wait for at least the `max_cert_duration` of your longest-lived policy before removing the old key from target servers.
 
+> [!NOTE]
+> **Applies to**: **FileCA** (native) and **SoftHSM CA** (external key management).
+
 ## 4. Disaster Recovery (Backup Custody)
 
 Ephemera uses Shamir's Secret Sharing for CA key backups.
@@ -80,6 +89,9 @@ Ephemera uses Shamir's Secret Sharing for CA key backups.
 - **Storage**: Store the encrypted backup (`ephemera_backup.enc`) in your standard infrastructure backup location.
 - **Custody**: Split the decryption password into `n` shards (e.g., 5) with a threshold `k` (e.g., 3).
 - **Distribution**: Give shards to separate individuals (Custodians) across different teams/regions. **Never store shards on the same infrastructure being backed up.**
+
+> [!IMPORTANT]
+> **Applies to**: **FileCA** backend. SoftHSM users rely on hardware-level backups/cloning.
 
 ## 5. Audit & Integrity
 
@@ -91,6 +103,9 @@ Run the standalone verification script (documented in §4 of the Audit Log Guide
 ```bash
 python scripts/verify_audit.py /path/to/audit.json
 ```
+
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
 
 ---
 > [!IMPORTANT]

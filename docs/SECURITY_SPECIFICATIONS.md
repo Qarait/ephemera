@@ -1,6 +1,6 @@
 # Security Technical Specifications: Ephemera
 
-This document provide deep technical details on Ephemera's security implementation for auditors and security engineers.
+This document provides deep technical details on Ephemera's security implementation for auditors and security engineers.
 
 ## 1. Authentication & Wire Protocols
 
@@ -15,6 +15,9 @@ This document provide deep technical details on Ephemera's security implementati
 2. Server validates credentials + TOTP.
 3. Server returns session cookie.
 
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
+
 ## 2. WebAuthn Implementation
 
 ### CLI Integration
@@ -23,7 +26,10 @@ Ephemera avoids the "Native CLI WebAuthn" complexity by using a **Browser Sideca
 - **Sensitive Operations (Renew/Sudo)**: The CLI opens the system browser to a server-hosted page (e.g., `/renew` or `/sudo_approve.html`).
 - **RP ID / Origin**: The browser handles standard WebAuthn origin binding against the server's hostname.
 
-### model Hardening
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
+
+### Model Hardening
 - **Downgrade Prevention**: Once a WebAuthn credential is registered to an account, the server can be configured (via Policy) to reject any renewal that does not use WebAuthn.
 - **Recovery**: Admin-assisted re-enrollment. Shards/Quorum for CA recovery (see `PRODUCTION_READY.md`).
 
@@ -40,14 +46,19 @@ When signing a user certificate, Ephemera uses the following `ssh-keygen` profil
 | **Extensions** | Default | `permit-pty`, `permit-port-forwarding` (OOB) |
 | **Critical Options** | None | Source-address restrictions are currently handled via Network-level allowlists |
 
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
+
 ## 4. CA Key Protection
 
 ### SoftHSM / PKCS#11
+> **Applies to**: **SoftHSM CA** backend.
 - **Command**: `ssh-keygen -D <module> -s <ca_pub> ...`
 - **PIN Handling**: Passed via a temporary `SSH_ASKPASS` script which is deleted immediately after use.
 - **Isolation**: The private key never touches the disk or the application memory (it remains inside SoftHSM).
 
 ### File-based CA
+> **Applies to**: **FileCA** backend.
 - **Encryption**: AES-256-CBC via `cryptography` library.
 - **Key Master Password**: Derived from `CA_MASTER_PASSWORD` environment variable.
 - **Key Rotation**: Shamir-backed backups of the master secret for recovery.
@@ -70,6 +81,9 @@ The audit log is a JSON-L file where each record is chained to the previous:
 - **Genesis**: First entry `prev_hash` is 64 zeros.
 - **Integrity**: `hash` is computed over the JSON body *without* the `hash` field, with keys sorted alphabetically.
 - **Continuity**: `prev_hash` of entry `N+1` must match `hash` of entry `N`.
+
+> [!NOTE]
+> **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
 
 ---
 > [!NOTE]
