@@ -76,5 +76,20 @@ If a user loses access to their registered hardware key:
 - **Password-Only Authentication**: Ephemera explicitly moves away from passwords. TOTP is provided as a fallback only; WebAuthn (FIDO2) is the primary intended authentication factor.
 - **Continuous Revocation**: Real-time revocation of short-lived (5m) certificates is excluded to prevent the CA from becoming a runtime failure dependency for every single SSH packet.
 
+## 7. Complementary Controls (What You Still Need)
+
+Ephemera governs **who may receive access** and **for how long**. It does not monitor, inspect, or control what happens during an SSH session. A complete security posture requires additional controls:
+
+| Control | Purpose | Examples |
+|:--------|:--------|:---------|
+| **Endpoint Hardening** | Reduce attack surface on client machines | EDR, disk encryption, OS patching |
+| **Session Recording** | Audit what happened during a session | asciinema, Teleport session recording, or OS-level auditd |
+| **Command Control** | Restrict which commands can be executed | sudo policies, rbash, SELinux/AppArmor |
+| **Detection & Alerting** | Identify anomalous access patterns | SIEM integration, failed auth alerting |
+| **Log Retention** | Meet compliance and forensic needs | Centralized log shipping, immutable storage |
+
+> [!CAUTION]
+> Deploying Ephemera alone does not constitute a complete SSH security program. It replaces static key management — it does not replace runtime controls or detection.
+
 ---
 *Threat model and security assumptions are documented here. Feedback and critique are welcome.*
