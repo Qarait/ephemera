@@ -203,6 +203,9 @@ docker compose up -d
 > **Note:** CA master password is auto-generated and persisted on first run.  
 > For production, set `CA_MASTER_PASSWORD` in a `.env` file before starting.
 
+> [!IMPORTANT]
+> **Production Deployments**: Use the SoftHSM backend for hardware-backed key isolation. The CA private key never touches disk. See [PKCS#11 Setup Guide](docs/PKCS11-SoftHSM.md).
+
 ### 2. Access the Dashboard
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -305,6 +308,7 @@ rules:
 ```
 
 ## Documentation
+- **[Live Documentation Overview](https://qarait.github.io/ephemera/)**
 - See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for design details.
 - See [SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for threat assumptions and trust boundaries.
 - See [docs/](docs/) for additional guides.
