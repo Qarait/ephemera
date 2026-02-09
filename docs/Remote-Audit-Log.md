@@ -75,3 +75,61 @@ sudo ufw allow 514/udp
 *   **Cannot wipe logs**: Logs are stored off-host immediately.
 *   **Cannot connect to Pi**: SSH is blocked from the source.
 *   **Cannot influence storage**: The flow is one-way (UDP).
+
+## 4. Audit Chain Verification
+
+Ephemera's audit log is a Merkle-style hash chain. Each entry contains:
+- `prev_hash`: SHA256 hash of the previous entry
+- `hash`: SHA256 of the current entry (excluding the `hash` field itself)
+
+### Trust Anchor (Genesis)
+
+The first entry in the chain uses a genesis anchor of `0000000000000000000000000000000000000000000000000000000000000000` (64 zeros) as its `prev_hash`. This is the root of the chain.
+
+### Verification Methods
+
+**Via API (requires session):**
+```bash
+curl -X POST http://localhost:3000/api/audit/verify \
+  -H "Cookie: session=<your-session>" 
+```
+
+**Via Python (standalone):**
+```python
+import json, hashlib
+
+def verify_audit_file(path):
+    prev_hash = "0" * 64
+    with open(path, 'r') as f:
+        for i, line in enumerate(f):
+            if not line.strip(): continue
+            entry = json.loads(line)
+            stored_hash = entry.pop('hash', None)
+            if entry.get('prev_hash') != prev_hash:
+                print(f"CHAIN BREAK at line {i+1}")
+                return False
+            calculated = hashlib.sha256(
+                json.dumps(entry, sort_keys=True).encode()
+            ).hexdigest()
+            if calculated != stored_hash:
+                print(f"INTEGRITY FAILURE at line {i+1}")
+                return False
+            prev_hash = stored_hash
+    print(f"Verified {i+1} entries successfully")
+    return True
+```
+
+### Truncation Detection
+
+To detect if entries have been deleted from the local log:
+
+1. **Compare entry count** between Black Box and local log
+2. **Compare head hash** — the most recent `hash` on both systems should match
+3. **Periodic anchoring** — push the latest `hash` to external WORM storage (S3 Glacier, tape, or signed git tag)
+
+> [!TIP]
+> **Recommended Pattern**: Schedule a daily job that reads the last hash from the local audit log and appends it to an external, append-only location. Any truncation will cause a mismatch on the next comparison.
+
+### Future Enhancement
+
+Signed checkpoints (a hash signed by the CA key and pushed to multiple locations) are planned for a future release to provide cryptographic non-repudiation of the audit state.
