@@ -38,7 +38,39 @@ In a sovereign deployment, the CA is the single point of issuance. If the CA is 
 ### Quorum Recovery Boundaries
 Shamir's Secret Sharing (k-of-n) technically permits recovery if `k` custodians collude. This is an intended property of the model to ensure disaster recovery without a single point of failure (SPOF).
 
-## 4. Explicit Non-Goals
+## 4. MFA Fallback Policy
+
+Ephemera supports two MFA methods with distinct security properties:
+
+### WebAuthn (Primary)
+Hardware-backed authentication via FIDO2 keys (YubiKey, Titan, Nitrokey) or platform authenticators (TouchID, Windows Hello). WebAuthn provides:
+- Phishing resistance via origin binding
+- Physical presence verification
+- Non-exportable private keys
+
+### TOTP (Fallback)
+Time-based One-Time Passwords are provided as a fallback for initial onboarding or environments where hardware keys are not yet deployed.
+
+> [!IMPORTANT]
+> **TOTP is not permitted for privileged operations.** The following actions require WebAuthn exclusively:
+> - SUDO approval (`sudo.require_webauthn: true` in policy.yaml)
+> - Certificate renewal via `/renew` endpoint
+> - Admin key rotation
+
+Organizations requiring WebAuthn-only authentication for all operations should ensure all users complete hardware key enrollment before disabling TOTP setup flows.
+
+## 5. Lost Authenticator Recovery
+
+If a user loses access to their registered hardware key:
+
+1. **Admin-Assisted Re-enrollment**: An administrator with API access can clear the user's `webauthn_credentials` field from the users database, allowing them to re-enroll a new device.
+
+2. **Quorum Recovery (Break-Glass)**: If the admin also loses access, the Shamir-protected backup can be restored by a quorum of custodians to recover the system state.
+
+> [!TIP]
+> **Best Practice**: Users should register multiple hardware keys (e.g., primary YubiKey + backup YubiKey stored securely) to avoid single points of failure.
+
+## 6. Explicit Non-Goals
 
 - **SSH MITM Inspection**: Ephemera does not inspect SSH traffic. It facilitates the *establishment* of a trusted connection but does not act as a proxy.
 - **Password-Only Authentication**: Ephemera explicitly moves away from passwords. TOTP is provided as a fallback only; WebAuthn (FIDO2) is the primary intended authentication factor.
