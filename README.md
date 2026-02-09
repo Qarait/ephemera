@@ -232,8 +232,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### 2. Client Setup (The Magic)
 
 ```bash
-# Install the CLI
-pip install ephemera-cli  # (Coming soon to PyPI)
+# Install the CLI from source
+git clone https://github.com/Qarait/ephemera.git
+cd ephemera
+pip install .
 
 # Initialize your SSH config
 ephemera init
