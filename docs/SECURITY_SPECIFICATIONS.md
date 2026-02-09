@@ -18,13 +18,14 @@ This document provides deep technical details on Ephemera's security implementat
 > [!NOTE]
 > **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
 
-## 2. WebAuthn Implementation
-
-### CLI Integration
-Ephemera avoids the "Native CLI WebAuthn" complexity by using a **Browser Sidecar** pattern:
-- **Authentication**: `ephemera login` uses a standard username/password/TOTP flow.
-- **Sensitive Operations (Renew/Sudo)**: The CLI opens the system browser to a server-hosted page (e.g., `/renew` or `/sudo_approve.html`).
 - **RP ID / Origin**: The browser handles standard WebAuthn origin binding against the server's hostname.
+
+### Sidecar Binding Protocol
+To prevent session fixation or CSRF-driven certificate issuance, the Browser Sidecar follows this protocol:
+- **Binding**: The CLI relies on the existing Cookie-based session.
+- **Single-use / TTL**: Requests (like SUDO) generate a unique `request_id` (UUIDv4) valid for 300 seconds.
+- **Polling / Resume**: The CLI (or sudo plugin) polls `GET /api/sudo/status/<id>`. Once the browser completes the WebAuthn challenge, the server marks that specific `request_id` as "Approved."
+- **Replay Prevention**: The WebAuthn `challenge` is single-use and tied to the user's session.
 
 > [!NOTE]
 > **Applies to**: Both **FileCA** and **SoftHSM CA** backends.
@@ -39,7 +40,7 @@ When signing a user certificate, Ephemera uses the following `ssh-keygen` profil
 
 | Field | Value | Rationale |
 |:------|:------|:----------|
-| **Serial (`-z`)** | `1` | Simplified serial management (Serial is used for revocation) |
+| **Serial (`-z`)** | `uint64` (Random) | Unique serial per cert; required for KRL-based revocation |
 | **Identifier (`-I`)** | `ephemera-<uuid>` | Links certificate to audit log entry |
 | **Principals (`-n`)** | List (e.g. `user,root`) | Restricted by policy based on user role |
 | **Validity (`-V`)** | `+<N>s` | Short-lived (default 300s) |
@@ -59,9 +60,13 @@ When signing a user certificate, Ephemera uses the following `ssh-keygen` profil
 
 ### File-based CA
 > **Applies to**: **FileCA** backend.
-- **Encryption**: AES-256-CBC via `cryptography` library.
-- **Key Master Password**: Derived from `CA_MASTER_PASSWORD` environment variable.
-- **Key Rotation**: Shamir-backed backups of the master secret for recovery.
+
+**Encryption Standard**: Fernet (Authenticated Encryption)
+- **Algorithm**: AES-128 in CBC mode.
+- **Integrity**: HMAC with SHA256 (using an EtM - Encrypt-then-MAC approach).
+- **KDF**: PBKDF2 with SHA256 PRF.
+- **Iterations**: 100,000.
+- **Strength**: The `CA_MASTER_PASSWORD` is salted with 16 random bytes (`os.urandom(16)`) before key derivation.
 
 ## 5. Audit Ledger Specification
 

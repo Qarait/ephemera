@@ -62,13 +62,17 @@ class FileCA(BaseCA):
                 raise RuntimeError(f"CA key not found at {self.ca_key_path}")
 
             # Prepare command with the correct key path
+            # Generate a 64-bit random serial number for the certificate
+            import secrets
+            serial = secrets.randbits(64)
+            
             cmd = [
                 'ssh-keygen',
                 '-s', signing_key_path,
                 '-I', f"ephemera-{request_id}",
                 '-n', ",".join(principals),
                 '-V', validity_spec,
-                '-z', "1", 
+                '-z', str(serial), 
                 user_pubkey_path
             ]
             
@@ -142,6 +146,11 @@ class SoftHsmCA(BaseCA):
             env['DISPLAY'] = ':0' 
             env['SSH_ASKPASS_REQUIRE'] = 'force' 
         
+        # Prepare command
+        # Generate a 64-bit random serial number for the certificate
+        import secrets
+        serial = secrets.randbits(64)
+        
         cmd = [
             "ssh-keygen",
             "-D", self.module_path,
@@ -149,7 +158,7 @@ class SoftHsmCA(BaseCA):
             "-I", f"ephemera-{request_id}",
             "-n", ",".join(principals),
             "-V", validity_spec,
-            "-z", "1",
+            "-z", str(serial),
             "-f", user_pubkey_path
         ]
         
